@@ -1,0 +1,40 @@
+
+spring:
+  application:
+    name: LoseFat
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/lose_fat?serverTimeZone=GMT%2b8
+    username: root
+    password: 123456
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  servlet:
+    multipart:
+      max-file-size: 10MB # ???????????10MB
+      max-request-size: 50MB  # ?????????50MB
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+server:
+  port: 3000
+  address: 0.0.0.0
+
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  #    map-underscore-to-camel-case: false # ??????
+  mapper-locations: classpath*:mapper/*.xml
+
+files: #????????
+  upload:
+    path: /Users/xiaodu/IdeaProjects/LoseFat/files/
+#    upload: 192.168.213.153:3000
+    upload: 127.0.0.1:3000
+
+aliyun:
+  AccessKeyId: LTAI5t8imLQeF1xq24fywm9j
+  AccessKeySecret: vlvqBuVjrqFDIYHtdZIvr6IzOnVxxn
