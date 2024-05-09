@@ -1,0 +1,536 @@
+<template>
+	<view class="" style="height: 100vh">
+		<!-- 通知 -->
+		<uni-notice-bar style="z-index: 1" show-icon text="新用户默认密码为用户名前8位,请及时修改密码!" />
+
+		<uni-section type="line">
+			<uni-list :border="true">
+				<view @click="upLoad">
+					<uni-list-item showArrow>
+						<template v-slot:body>
+							<text class="slot-box slot-text">头像</text>
+						</template>
+						<template v-slot:footer>
+							<image class="slot-image" :src="avatar"></image>
+						</template>
+					</uni-list-item>
+				</view>
+
+				<view v-for="(item, index) in userList" :key="index">
+					<picker mode="date" v-if="item.title == '生日'" :value="item.value" @change="changeBirthday">
+						<uni-list-item class="list-item" showArrow :title="item.title" :rightText="item.value"></uni-list-item>
+					</picker>
+					<picker mode="selector" :range="sex" v-else-if="item.title == '性别'" :value="item.value" @change="changeSex">
+						<uni-list-item class="list-item" showArrow :title="item.title" :rightText="item.value"></uni-list-item>
+					</picker>
+					<picker mode="selector" :range="ageList" v-else-if="item.title == '年龄'" :value="item.value - 1" @change="changeAge">
+						<uni-list-item class="list-item" showArrow :title="item.title" :rightText="item.value"></uni-list-item>
+					</picker>
+					<picker mode="selector" :range="heightList" v-else-if="item.title == '身高(单位:cm)'" :value="heightList[item.value]" @change="changeHeight">
+						<uni-list-item class="list-item" showArrow :title="item.title" :rightText="item.value"></uni-list-item>
+					</picker>
+					<picker mode="selector" :range="weightList" v-else-if="item.title == '体重(单位:斤)'" :value="weightList[item.value]" @change="changeWeight">
+						<uni-list-item class="list-item" showArrow :title="item.title" :rightText="item.value"></uni-list-item>
+					</picker>
+
+					<view class="" v-else-if="item.title == '用户名'" @click="showPopup(false)">
+						<uni-list-item class="list-item" showArrow :title="item.title" :rightText="item.value"></uni-list-item>
+					</view>
+					<view class="" v-else-if="item.title == '密码'" @click="showPopup(true)">
+						<uni-list-item class="list-item" showArrow :title="item.title" rightText="******"></uni-list-item>
+					</view>
+					<view class="" v-else-if="item.title == '关联手机'" @click="open_popup_phone()">
+						<uni-list-item class="list-item" showArrow :title="item.title" :rightText="item.value"></uni-list-item>
+					</view>
+
+					<view class="" v-else>
+						<uni-list-item class="list-item" showArrow :title="item.title" :rightText="item.value"></uni-list-item>
+					</view>
+				</view>
+			</uni-list>
+		</uni-section>
+		<view class="btn">
+			<button type="primary" @click="saveUpdate">保存修改</button>
+			<button type="warn" @click="loginOut">退出登录</button>
+		</view>
+
+		<!-- popup弹窗 -->
+		<view class="popup">
+			<uni-popup ref="popup" type="bottom" background-color="#fff" border-radius="10px 10px 0 0">
+				<view v-if="showPwd">
+					<view class="popup-input">
+						<label for="">旧密码</label>
+						<input class="uni-input" type="text" confirm-type="next" adjust-position cursor-spacing="160px" v-model="editUserpwd.oldPwd" />
+					</view>
+
+					<view class="popup-input">
+						<label for="">新密码</label>
+						<input class="uni-input" type="text" confirm-type="done" adjust-position cursor-spacing="100px" v-model="editUserpwd.newPwd" />
+					</view>
+				</view>
+				<view v-else>
+					<view class="popup-input">
+						<label for="">用户名</label>
+						<input class="uni-input" type="text" confirm-type="done" adjust-position cursor-spacing="100px" v-model="editUserName" />
+					</view>
+				</view>
+
+				<view class="popup-btn">
+					<button type="button" class="bg-login-zl" @click="updateMsg">保存修改</button>
+				</view>
+			</uni-popup>
+		</view>
+		<!-- 提示信息弹窗 -->
+		<view>
+			<uni-popup ref="message" type="message">
+				<uni-popup-message :type="msgType" :message="messageText" :duration="2000"></uni-popup-message>
+			</uni-popup>
+		</view>
+
+		<!-- 修改手机号提示信息弹窗 -->
+		<uni-popup ref="popup_phone" type="dialog">
+			<uni-popup-dialog
+				style="text-align: center; font-size: 15px; padding: 0 25px"
+				mode="base"
+				message="确认更换手机号？"
+				:content="popup_phoneMsg"
+				confirmText="确认更换"
+				cancelText="我再想想"
+				:duration="2000"
+				:before-close="true"
+				@close="popup_close"
+				@confirm="popup_confirm"
+			></uni-popup-dialog>
+		</uni-popup>
+	</view>
+</template>
+
+<script setup>
+import { reactive, ref, getCurrentInstance } from 'vue';
+import uniPopup from '../../uni_modules/uni-popup/components/uni-popup/uni-popup.vue';
+import { onLoad } from '@dcloudio/uni-app';
+const { proxy } = getCurrentInstance();
+const { $request } = getCurrentInstance().appContext.config.globalProperties;
+const userMessage = ref(null);
+// const userMessage = uni.getStorageSync('user') != null ? uni.getStorageSync('user') : null;
+const showPwd = ref(false);
+const popup = ref(null);
+const popup_phone = ref(null);
+const popup_phoneMsg = ref('');
+const open_popup_phone = () => {
+	const start = userMessage.value.userPhone.slice(0, 3);
+	const end = userMessage.value.userPhone.slice(-4);
+	popup_phoneMsg.value = '更换后现手机号' + start + '****' + end + '将不能用于登录！';
+	popup_phone.value.open();
+};
+const userList = ref([]);
+const avatar = ref('');
+const token = ref('');
+//获取用户信息
+const getUser = () => {
+	$request('/user/getUser', 'POST').then((res) => {
+		if (res.code === '200') {
+			userMessage.value = res.data;
+			const list = [
+				{
+					name: 'userName',
+					title: '用户名',
+					value: userMessage.value.userName
+				},
+				{
+					name: 'userPassword',
+					title: '密码',
+					value: ''
+				},
+
+				{
+					name: 'userAge',
+					title: '年龄',
+					value: userMessage.value.userAge
+				},
+				{
+					name: 'userSex',
+					title: '性别',
+					value: userMessage.value.userSex
+				},
+				{
+					name: 'userBirthday',
+					title: '生日',
+					value: userMessage.value.userBirthday
+				},
+				{
+					name: 'userPhone',
+					title: '关联手机',
+					value: userMessage.value.userPhone
+				},
+				{
+					name: 'userHeight',
+					title: '身高(单位:cm)',
+					value: userMessage.value.userHeight
+				},
+				{
+					name: 'userWeight',
+					title: '体重(单位:斤)',
+					value: userMessage.value.userWeight
+				},
+				{
+					name: 'standardWeigth',
+					title: '标准体重(单位:斤)',
+					value: userMessage.value.standardWeigth
+				},
+				{
+					name: 'basalMetabolism',
+					title: '基础代谢(单位:千卡)',
+					value: userMessage.value.basalMetabolism
+				}
+			];
+			userList.value = list;
+			token.value = userMessage.value.token;
+			avatar.value = userMessage.value.avatar != null ? userMessage.value.avatar : 'http://' + proxy.$host + '/file/download/avatar.png';
+		}
+	});
+};
+onLoad(() => {
+	getUser();
+});
+const popup_confirm = () => {
+	uni.navigateTo({
+		url: '../../pageHome/UpdataPhone/UpdataPhone'
+	});
+	popup_phone.value.close();
+};
+const popup_close = () => {
+	// uni.navigator({})
+	popup_phone.value.close();
+};
+
+//popup修改用户名密码弹窗
+const editUserName = ref('');
+const editUserpwd = reactive({
+	oldPwd: '',
+	newPwd: ''
+});
+//消息提示框
+const msgType = ref('success');
+const messageText = ref('');
+const message = ref(null);
+const showPopup = (value) => {
+	showPwd.value = value;
+	popup.value.open();
+};
+const updateMsg = () => {
+	if (showPwd.value) {
+		$request('/user/updateUserPwd', 'POST', editUserpwd).then((res) => {
+			if (res.code == '200') {
+				msgType.value = 'success';
+				messageText.value = '修改成功！';
+				message.value.open();
+				popup.value.close();
+				editUserpwd.newPwd = '';
+				editUserpwd.oldPwd = '';
+			} else {
+				msgType.value = 'error';
+				messageText.value = res.message;
+				message.value.open();
+			}
+		});
+	} else {
+		$request('/user/updateUserName?editUserName=' + editUserName.value, 'POST').then((res) => {
+			if (res.code == '200') {
+				uni.setStorageSync('user', res.data);
+				userList.value.filter((e) => {
+					e.title === '用户名' ? (e.value = res.data.userName) : e;
+				});
+				msgType.value = 'success';
+				messageText.value = '修改成功！';
+				message.value.open();
+				popup.value.close();
+				editUserName.value = '';
+			} else {
+				msgType.value = 'error';
+				messageText.value = res.message;
+				message.value.open();
+			}
+		});
+	}
+};
+
+//性别选择器列表
+const sex = ref(['男', '女']);
+//生成身高选择器列表
+const setHeight = () => {
+	let list = [];
+	for (let i = 100; i <= 220; i++) {
+		list.push(i + ' cm');
+	}
+	return list;
+};
+//身高选择器列表
+const heightList = setHeight();
+
+//生成体重选择器列表
+const setWeight = () => {
+	let list = [];
+	for (let i = 80; i <= 300; i++) {
+		list.push(i + ' 斤');
+	}
+	return list;
+};
+//体重选择器列表
+const weightList = setWeight();
+
+//生成年龄选择器列表
+const setAge = () => {
+	const age = [];
+	for (let i = 1; i <= 100; i++) {
+		age.push(i);
+	}
+	return age;
+};
+//年龄选择器列表
+const ageList = setAge();
+
+//选择器改变后修改用户信息
+const changeValue = (key, e) => {
+	userList.value.forEach((v) => {
+		if (v.title === key) {
+			if (key == '性别') {
+				v.value = sex.value[e.detail.value];
+			} else if (key == '年龄') {
+				v.value = 1 + parseInt(e.detail.value);
+			} else if (key == '身高(单位:cm)') {
+				v.value = heightList[e.detail.value];
+			} else if (key == '体重(单位:斤)') {
+				v.value = weightList[e.detail.value];
+			} else if (key == '标准体重(单位:斤)') {
+				v.value = e.detail.standardWeight;
+			} else if (key == '基础代谢(单位:千卡)') {
+				v.value = e.detail.basaMetabolism;
+			} else {
+				v.value = e.detail.value;
+			}
+		}
+	});
+};
+
+//生日选择器
+const changeBirthday = (e) => {
+	changeValue('生日', e);
+};
+
+//性别选择器
+const changeSex = (e) => {
+	changeValue('性别', e);
+	getStandardWeight(e);
+	getBasaMetabolism(e);
+};
+//年龄选择器
+const changeAge = (e) => {
+	changeValue('年龄', e);
+	getBasaMetabolism(e);
+};
+//身高选择器
+const changeHeight = (e) => {
+	changeValue('身高(单位:cm)', e);
+	getStandardWeight(e);
+	getBasaMetabolism(e);
+};
+//体重选择器
+const changeWeight = (e) => {
+	changeValue('体重(单位:斤)', e);
+	getBasaMetabolism(e);
+};
+//标准体重
+const getStandardWeight = (e) => {
+	const findHeight = userList.value.filter((e) => {
+		return e.title == '身高(单位:cm)' ? e : null;
+	});
+	const height = findHeight[0].value.slice(0, -3);
+	const findSex = userList.value.filter((e) => {
+		return e.title == '性别' ? e : null;
+	});
+	let standardWeight = null;
+	if (findSex[0].value == '男') {
+		standardWeight = Math.round((height - 80) * 0.7) * 2 + ' 斤';
+	} else {
+		standardWeight = Math.round((height - 70) * 0.6) * 2 + ' 斤';
+	}
+	e.detail.standardWeight = standardWeight;
+	changeValue('标准体重(单位:斤)', e);
+};
+//基础代谢
+const getBasaMetabolism = (e) => {
+	const findHeight = userList.value.filter((e) => {
+		return e.title == '身高(单位:cm)' ? e : null;
+	});
+	const findWeight = userList.value.filter((e) => {
+		return e.title == '体重(单位:斤)' ? e : null;
+	});
+	const findAge = userList.value.filter((e) => {
+		return e.title == '年龄' ? e : null;
+	});
+	const height = findHeight[0].value.slice(0, -3);
+	const age = findAge[0].value;
+	const weight = findWeight[0].value.slice(0, -2);
+	const findSex = userList.value.filter((e) => {
+		return e.title == '性别' ? e : null;
+	});
+
+	let basaMetabolism = null;
+	if (findSex[0].value == '男') {
+		basaMetabolism = Math.round((10 * weight) / 2 + 6.25 * height - 5 * age + 5) + ' 千卡';
+	} else {
+		basaMetabolism = Math.round((10 * weight) / 2 + 6.25 * height - 5 * age - 161) + ' 千卡';
+	}
+	e.detail.basaMetabolism = basaMetabolism;
+	changeValue('基础代谢(单位:千卡)', e);
+};
+//上传头像
+const upLoad = () => {
+	uni.chooseMedia({
+		count: 1,
+		mediaType: ['image'],
+		sourceType: ['album'],
+		success: (res) => {
+			uni.uploadFile({
+				url: 'http://' + proxy.$host + '/file/upload', //服务器请求接口地址
+				filePath: res.tempFiles[0].tempFilePath, //选择的本地路径地址
+				fileType: 'image',
+				name: 'file',
+				header: {
+					Authorization: uni.getStorageSync('token')
+				},
+				success: (res) => {
+					if (res.statusCode === 200) {
+						const user = uni.getStorageSync('user');
+						user.avatar = res.data;
+						uni.setStorageSync('user', user);
+						avatar.value = res.data;
+					} else {
+						msgType.value = 'error';
+						messageText.value = res.message;
+						message.value.open();
+					}
+				}
+			});
+		}
+	});
+};
+
+//保存修改
+const saveUpdate = () => {
+	const data = {
+		userName: 'string',
+		userPhone: 'string',
+		userAge: 0,
+		userBirthday: '2024-03-26',
+		userHeight: 'string',
+		userWeight: 'string',
+		standardWeigth: 'string',
+		basalMetabolism: 'string',
+		userSex: 'string'
+	};
+	userList.value.filter((e) => {
+		data[e.name] = e.value ? e.value : '';
+	});
+	delete data['userPassword'];
+	$request('/user/saveUpdate', 'POST', data).then((res) => {
+		if (res.code === '200') {
+			msgType.value = 'success';
+			messageText.value = '保存成功！';
+			message.value.open();
+			uni.setStorageSync('user', res.data);
+		} else {
+			msgType.value = 'error';
+			messageText.value = res.message;
+			message.value.open();
+		}
+		console.log(res);
+	});
+};
+
+//退出登录
+const loginOut = () => {
+	uni.clearStorageSync();
+	userList.value.filter((e) => {
+		e.value = '';
+	});
+	uni.navigateBack();
+};
+</script>
+
+<style lang="less">
+.slot-box {
+	/* #ifndef APP-NVUE */
+	display: flex;
+	/* #endif */
+	flex-direction: row;
+	align-items: center;
+}
+
+.slot-image {
+	/* #ifndef APP-NVUE */
+	display: block;
+	/* #endif */
+	margin-right: 10px;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	border: 1px solid #f4f4f4;
+}
+
+.slot-text {
+	flex: 1;
+	font-size: 14px;
+	margin-right: 10px;
+}
+
+.uni-list-item__content-title {
+	height: 20px;
+	line-height: 20px;
+}
+
+.btn {
+	padding: 15px;
+
+	button {
+		margin: 10px;
+		border-radius: 35px;
+	}
+}
+
+.popup {
+	.popup-input {
+		margin: 10px 20px;
+		padding: 15px 20px;
+		border-radius: 25px;
+		background-image: linear-gradient(45deg, #727cfb, #46d0ed);
+		color: #ffffff;
+		width: 90vw;
+		display: -webkit-inline-box;
+
+		input {
+			color: #ffffff;
+			margin-left: 10px;
+			padding: 0 10px;
+			border-left: 1px solid rgba(255, 255, 255, 0.5);
+		}
+	}
+
+	.popup-btn {
+		padding: 15px 20px;
+		border-radius: 25px;
+		color: #ffffff;
+		width: 90vw;
+
+		.bg-login-zl {
+			font-size: 15px;
+			border-radius: 25px;
+			height: 45px;
+			width: 90vw;
+			background-image: linear-gradient(45deg, #727cfb, #46d0ed);
+			color: #ffffff;
+		}
+	}
+}
+</style>

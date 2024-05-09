@@ -1,0 +1,1 @@
+<view class="content"><view wx:if="{{a}}" class="empty"><image class="img" src="{{b}}" alt=""/><text class="text">暂无数据</text></view><view wx:else class="food-class"><view wx:for="{{c}}" wx:for-item="item" wx:key="c"><uni-list-item wx:if="{{item.b}}" u-i="{{item.a}}" bind:__l="__l" u-p="{{item.b}}"></uni-list-item></view></view></view>

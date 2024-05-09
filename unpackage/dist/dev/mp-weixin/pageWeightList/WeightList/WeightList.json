@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "体重记录",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "uni-calendar": "../../uni_modules/uni-calendar/components/uni-calendar/uni-calendar"
+  }
+}

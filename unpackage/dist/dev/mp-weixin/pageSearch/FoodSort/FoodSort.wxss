@@ -1,0 +1,1 @@
+.content{background-color:#f8f8f8;height:100vh}.content .empty{width:100vw;height:80vh;display:flex;flex-direction:column;justify-content:center;align-items:center}.content .empty .img{width:180px;height:150px}.content .empty .text{color:#a6a6a6;padding:20px 0}

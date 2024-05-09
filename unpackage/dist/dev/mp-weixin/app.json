@@ -1,0 +1,143 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/Home/Home",
+    "pages/Records/Records"
+  ],
+  "subPackages": [
+    {
+      "root": "pageHome",
+      "pages": [
+        "UpdataPhone/UpdataPhone",
+        "EditUser/EditUser"
+      ]
+    },
+    {
+      "root": "pageLogin",
+      "pages": [
+        "Login/Login"
+      ]
+    },
+    {
+      "root": "pageWeightList",
+      "pages": [
+        "WeightList/WeightList"
+      ]
+    },
+    {
+      "root": "pageSearch",
+      "pages": [
+        "Search/Search",
+        "FoodMessage/FoodMessage",
+        "moreMessage/moreMessage",
+        "FoodCompare/FoodCompare",
+        "FoodSort/FoodSort",
+        "FoodList/FoodList"
+      ]
+    },
+    {
+      "root": "pageQuestion",
+      "pages": [
+        "Question/Question"
+      ]
+    }
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "uni-app",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/index.png",
+        "selectedIconPath": "static/select_index.png"
+      },
+      {
+        "text": "记录",
+        "pagePath": "pages/Records/Records",
+        "iconPath": "static/notepad.png",
+        "selectedIconPath": "static/select_notepad.png"
+      },
+      {
+        "text": "个人中心",
+        "pagePath": "pages/Home/Home",
+        "iconPath": "static/me.png",
+        "selectedIconPath": "static/select_me.png"
+      }
+    ]
+  },
+  "preloadRule": {
+    "pageHome/UpdataPhone/UpdataPhone": {
+      "network": "all",
+      "packages": [
+        "pageHome"
+      ]
+    },
+    "pageHome/EditUser/EditUser": {
+      "network": "all",
+      "packages": [
+        "pageHome"
+      ]
+    },
+    "pageLogin/Login/Login": {
+      "network": "all",
+      "packages": [
+        "pageLogin"
+      ]
+    },
+    "pageWeightList/WeightList/WeightList": {
+      "network": "all",
+      "packages": [
+        "pageWeightList"
+      ]
+    },
+    "pageSearch/Search/Search": {
+      "network": "all",
+      "packages": [
+        "pageSearch"
+      ]
+    },
+    "pageSearch/FoodMessage/FoodMessage": {
+      "network": "all",
+      "packages": [
+        "pageSearch"
+      ]
+    },
+    "pageSearch/moreMessage/moreMessage": {
+      "network": "all",
+      "packages": [
+        "pageSearch"
+      ]
+    },
+    "pageSearch/FoodCompare/FoodCompare": {
+      "network": "all",
+      "packages": [
+        "pageSearch"
+      ]
+    },
+    "pageSearch/FoodSort/FoodSort": {
+      "network": "all",
+      "packages": [
+        "pageSearch"
+      ]
+    },
+    "pageSearch/FoodList/FoodList": {
+      "network": "all",
+      "packages": [
+        "pageSearch"
+      ]
+    },
+    "pageQuestion/Question/Question": {
+      "network": "all",
+      "packages": [
+        "pageQuestion"
+      ]
+    }
+  },
+  "lazyCodeLoading": "requiredComponents",
+  "usingComponents": {}
+}

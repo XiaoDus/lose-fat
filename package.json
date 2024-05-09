@@ -1,0 +1,8 @@
+{
+	"dependencies": {
+		"echarts": "^5.5.0"
+	},
+	"devDependencies": {
+		"sass-loader": "^7.0.3"
+	}
+}

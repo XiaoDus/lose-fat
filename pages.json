@@ -1,0 +1,245 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页"
+			}
+		},
+
+		{
+			"path": "pages/Home/Home",
+			"style": {
+				"navigationBarTitleText": "个人中心",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/Records/Records",
+			"style": {
+				"navigationBarTitleText": "记录",
+				"enablePullDownRefresh": true
+			}
+		}
+	],
+
+	"subPackages": [ {
+			"root": "pageHome",
+			"pages": [ {
+					"path": "UpdataPhone/UpdataPhone",
+					"style": {
+						"navigationBarTitleText": "更换手机号",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "EditUser/EditUser",
+					"style": {
+						"navigationBarTitleText": "修改信息"
+					}
+				}
+			]
+		},
+		{
+			"root": "pageLogin",
+			"pages": [ {
+				"path": "Login/Login",
+				"style": {
+					"navigationBarTitleText": "登录"
+				}
+			} ]
+		},
+		{
+			"root": "pageWeightList",
+			"pages": [ {
+				"path": "WeightList/WeightList",
+				"style": {
+					"navigationBarTitleText": "体重记录",
+					"enablePullDownRefresh": true
+				}
+			} ]
+		},
+		{
+			"root": "pageSearch",
+			"pages": [ {
+					"path": "Search/Search",
+					"style": {
+						"navigationBarTitleText": "食物搜索",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "FoodMessage/FoodMessage",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "moreMessage/moreMessage",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "FoodCompare/FoodCompare",
+					"style": {
+						"navigationBarTitleText": "食物对比",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "FoodSort/FoodSort",
+					"style": {
+						"navigationBarTitleText": "食物分类",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "FoodList/FoodList",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+				}
+			]
+		},
+		{
+			"root": "pageQuestion",
+			"pages": [ {
+					"path": "Question/Question",
+					"style": {
+						"navigationBarTitleText": "每日一答",
+						"enablePullDownRefresh": false
+					}
+				}
+
+			]
+
+		}
+
+	],
+
+	"preloadRule": {
+		"pageHome/UpdataPhone/UpdataPhone": {
+			"network": "all",
+			"packages": [ "pageHome" ]
+		},
+		"pageHome/EditUser/EditUser": {
+			"network": "all",
+			"packages": [ "pageHome" ]
+		},
+		"pageLogin/Login/Login": {
+			"network": "all",
+			"packages": [ "pageLogin" ]
+		},
+		"pageWeightList/WeightList/WeightList": {
+			"network": "all",
+			"packages": [ "pageWeightList" ]
+		},
+		"pageSearch/Search/Search": {
+			"network": "all",
+			"packages": [ "pageSearch" ]
+		},
+		"pageSearch/FoodMessage/FoodMessage": {
+			"network": "all",
+			"packages": [ "pageSearch" ]
+		},
+		"pageSearch/moreMessage/moreMessage": {
+			"network": "all",
+			"packages": [ "pageSearch" ]
+		},
+		"pageSearch/FoodCompare/FoodCompare": {
+			"network": "all",
+			"packages": [ "pageSearch" ]
+		},
+		"pageSearch/FoodSort/FoodSort": {
+			"network": "all",
+			"packages": [ "pageSearch" ]
+		},
+		"pageSearch/FoodList/FoodList": {
+			"network": "all",
+			"packages": [ "pageSearch" ]
+		},
+		"pageQuestion/Question/Question": {
+			"network": "all",
+			"packages": [ "pageQuestion" ]
+		}
+
+
+
+
+
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"list": [ {
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconPath": "static/index.png",
+				"selectedIconPath": "static/select_index.png"
+			},
+			{
+				"text": "记录", //模式名称
+				"pagePath": "pages/Records/Records", //启动页面，必选
+				"iconPath": "static/notepad.png",
+				"selectedIconPath": "static/select_notepad.png"
+			},
+			{
+				"text": "个人中心", //模式名称
+				"pagePath": "pages/Home/Home", //启动页面，必选
+				"iconPath": "static/me.png",
+				"selectedIconPath": "static/select_me.png"
+			}
+
+
+
+		]
+	},
+	"condition": { //模式配置，仅开发期间生效
+		"current": 0, //当前激活的模式（list 的索引项）
+		"list": [ {
+				"name": "首页", //模式名称
+				"path": "pages/index/index" //启动页面，必选
+
+			}, {
+				"name": "个人中心", //模式名称
+				"path": "pages/Home/Home" //启动页面，必选
+
+			},
+			{
+				"name": "登录", //模式名称
+				"path": "pages/Login/Login" //启动页面，必选
+
+			},
+			{
+				"name": "修改信息", //模式名称
+				"path": "pageHome/EditUser/EditUser"
+
+			},
+			{
+				"name": "更换手机号", //模式名称
+				"path": "pageHome/UpdataPhone/UpdataPhone"
+
+			},
+			{
+				"name": "记录", //模式名称
+				"path": "pages/Records/Records"
+
+			}
+
+
+		]
+	},
+	"uniIdRouter": {}
+
+
+
+
+}
