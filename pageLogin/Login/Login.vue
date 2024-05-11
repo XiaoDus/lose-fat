@@ -43,8 +43,8 @@
 				<view class="border"></view>
 			</view>
 			<view style="display: flex; justify-content: center">
-				<img class="img" :src="`http://${proxy.$host}/file/download/ssm.png`" @click="selectWay = 'ssm'" />
-				<img class="img" :src="`http://${proxy.$host}/file/download/wx.png`" />
+				<img class="img" :src="`${proxy.$host}/file/download/ssm.png`" @click="selectWay = 'ssm'" />
+				<img class="img" :src="`${proxy.$host}/file/download/wx.png`" />
 			</view>
 		</view>
 		<view>

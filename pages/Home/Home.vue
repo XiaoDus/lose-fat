@@ -3,7 +3,7 @@
 		<view class="bg center">
 			<view class="bg-radius"></view>
 			<view class="logo" :hover-class="!login ? 'logo-hover' : ''">
-				<image class="logo-img" @click="loginOrUpdate" :src="avatarUrl"></image>
+				<image class="logo-img" @click="loginOrUpdate" :src="`${$host}${avatarUrl}`"></image>
 				<view class="logo-title">
 					<text class="uer-name">{{ userInfo != null ? userInfo.userName : '请登录' }}</text>
 				</view>
@@ -19,26 +19,26 @@
 			<view class="center-list">
 				<navigator :url="userInfo != null ? '../../pageHome/EditUser/EditUser' : '../../pageLogin/Login/Login'">
 					<view style="border-top: 10px solid #f4f4f4" class="center-list-item border-bottom">
-						<view class="list-icon color-1"><img class="img" :src="`http://${proxy.$host}/file/download/gerenziliao.png`" alt="" /></view>
+						<view class="list-icon color-1"><img class="img" :src="`${proxy.$host}/file/download/gerenziliao.png`" alt="" /></view>
 						<text class="list-text">信息管理</text>
 						<view class="navigat-arrow"><uni-icons type="right" size="20"></uni-icons></view>
 					</view>
 				</navigator>
 
 				<view class="center-list-item">
-					<view class="list-icon color-1"><img class="img" :src="`http://${proxy.$host}/file/download/tongzhi.png`" alt="" /></view>
+					<view class="list-icon color-1"><img class="img" :src="`${proxy.$host}/file/download/tongzhi.png`" alt="" /></view>
 					<text class="list-text">新消息通知</text>
 					<view class="navigat-arrow"><uni-icons type="right" size="20"></uni-icons></view>
 				</view>
 			</view>
 			<view class="center-list">
 				<view class="center-list-item border-bottom">
-					<view class="list-icon color-1"><img class="img" :src="`http://${proxy.$host}/file/download/wenhao.png`" alt="" /></view>
+					<view class="list-icon color-1"><img class="img" :src="`${proxy.$host}/file/download/wenhao.png`" alt="" /></view>
 					<text class="list-text">帮助与反馈</text>
 					<view class="navigat-arrow"><uni-icons type="right" size="20"></uni-icons></view>
 				</view>
 				<view class="center-list-item">
-					<view class="list-icon color-1"><img class="img" :src="`http://${proxy.$host}/file/download/yinsitiaokuan.png`" alt="" /></view>
+					<view class="list-icon color-1"><img class="img" :src="`${proxy.$host}/file/download/yinsitiaokuan.png`" alt="" /></view>
 					<text class="list-text">服务条款及隐私</text>
 					<view class="navigat-arrow"><uni-icons type="right" size="20"></uni-icons></view>
 				</view>
@@ -85,8 +85,9 @@ const getUser = () => {
 				}
 			];
 		} else {
+			userInfo.value = null;
 			login.value = false;
-			avatarUrl.value = 'http://' + proxy.$host + '/file/download/login.png';
+			avatarUrl.value = '/file/download/login.png';
 		}
 	});
 };
@@ -128,7 +129,6 @@ const login = ref(false);
 const userInfo = ref(null);
 const avatarUrl = ref('');
 const message = ref(null);
-const token = uni.getStorageSync('token');
 
 //登录或更换头像
 const loginOrUpdate = () => {
@@ -143,12 +143,12 @@ const loginOrUpdate = () => {
 			sourceType: ['album'],
 			success: (res) => {
 				uni.uploadFile({
-					url: 'http://' + proxy.$host + '/file/upload', //服务器请求接口地址
+					url: proxy.$host + '/file/upload', //服务器请求接口地址
 					filePath: res.tempFiles[0].tempFilePath, //选择的本地路径地址
 					fileType: 'image',
 					name: 'file',
 					header: {
-						Authorization: token
+						Authorization: uni.getStorageSync('token')
 					},
 					success: (res) => {
 						if (res.statusCode === 200) {

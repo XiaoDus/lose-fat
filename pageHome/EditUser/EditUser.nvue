@@ -11,7 +11,7 @@
 							<text class="slot-box slot-text">头像</text>
 						</template>
 						<template v-slot:footer>
-							<image class="slot-image" :src="avatar"></image>
+							<image class="slot-image" :src="`${$host}${avatar}`"></image>
 						</template>
 					</uni-list-item>
 				</view>
@@ -186,7 +186,7 @@ const getUser = () => {
 			];
 			userList.value = list;
 			token.value = userMessage.value.token;
-			avatar.value = userMessage.value.avatar != null ? userMessage.value.avatar : 'http://' + proxy.$host + '/file/download/avatar.png';
+			avatar.value = userMessage.value.avatar != null ? userMessage.value.avatar : proxy.$host + '/file/download/avatar.png';
 		}
 	});
 };
@@ -393,7 +393,7 @@ const upLoad = () => {
 		sourceType: ['album'],
 		success: (res) => {
 			uni.uploadFile({
-				url: 'http://' + proxy.$host + '/file/upload', //服务器请求接口地址
+				url: proxy.$host + '/file/upload', //服务器请求接口地址
 				filePath: res.tempFiles[0].tempFilePath, //选择的本地路径地址
 				fileType: 'image',
 				name: 'file',

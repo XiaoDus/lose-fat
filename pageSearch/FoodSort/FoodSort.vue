@@ -1,7 +1,7 @@
 <template>
 	<view class="content">
 		<view class="empty" v-if="isEmpty">
-			<img class="img" :src="`http://${proxy.$host}/file/download/empty.png`" alt="" />
+			<img class="img" :src="`${proxy.$host}/file/download/empty.png`" alt="" />
 			<text class="text">暂无数据</text>
 		</view>
 		<view class="food-class" v-else>
@@ -11,7 +11,7 @@
 					clickable
 					:title="item.name"
 					:to="`../FoodList/FoodList?id=${item.id}&name=${item.name}`"
-					:thumb="`http://${proxy.$host}/file/download/${item.icon}`"
+					:thumb="`${proxy.$host}/file/download/${item.icon}`"
 					thumb-size="lg"
 				></uni-list-item>
 			</view>

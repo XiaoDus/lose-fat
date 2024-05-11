@@ -14,27 +14,27 @@
 		<view class="grid">
 			<navigator url="/pageSearch/Search/Search" hover-class="none">
 				<view class="box">
-					<img class="icon" :src="`http://${proxy.$host}/file/download/tizhongchaxun.png`" alt="" />
+					<img class="icon" :src="`${proxy.$host}/file/download/tizhongchaxun.png`" alt="" />
 					<view class="text">热量查询</view>
 				</view>
 			</navigator>
 			<navigator url="/pageSearch/FoodSort/FoodSort">
 				<view class="box">
-					<img class="icon" :src="`http://${proxy.$host}/file/download/fenlei.png`" alt="" />
+					<img class="icon" :src="`${proxy.$host}/file/download/fenlei.png`" alt="" />
 					<view class="text">食物分类</view>
 				</view>
 			</navigator>
 
 			<navigator url="/pages/Records/Records" open-type="switchTab" hover-class="none">
 				<view class="box">
-					<img class="icon" :src="`http://${proxy.$host}/file/download/jilu.png`" alt="" />
+					<img class="icon" :src="`${proxy.$host}/file/download/jilu.png`" alt="" />
 					<view class="text">体重记录</view>
 				</view>
 			</navigator>
 
 			<navigator url="/pageSearch/FoodCompare/FoodCompare" hover-class="none">
 				<view class="box">
-					<img class="icon" :src="`http://${proxy.$host}/file/download/shujuduibi.png`" alt="" />
+					<img class="icon" :src="`${proxy.$host}/file/download/shujuduibi.png`" alt="" />
 					<view class="text">食物对比</view>
 				</view>
 			</navigator>
@@ -45,7 +45,7 @@
 				<swiper class="swiper" autoplay="true" indicator-dots="true" interval="3000" duration="700" circular="true">
 					<swiper-item v-for="(item, index) in carousel" :key="index">
 						<view class="swiper-item">
-							<img class="carousel" :src="`http://${proxy.$host}${item.url}`" alt="" />
+							<img class="carousel" :src="`${proxy.$host}${item.url}`" alt="" />
 						</view>
 					</swiper-item>
 				</swiper>

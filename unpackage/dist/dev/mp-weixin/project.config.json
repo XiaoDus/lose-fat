@@ -19,7 +19,7 @@
     "ignoreUploadUnusedFiles": true
   },
   "compileType": "miniprogram",
-  "libVersion": "",
+  "libVersion": "3.4.2",
   "appid": "wx64df49989c043d5c",
   "projectname": "LoseFat",
   "condition": {

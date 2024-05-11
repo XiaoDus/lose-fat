@@ -22,9 +22,9 @@ import {
 export function createApp() {
 	const app = createSSRApp( App )
 	app.config.globalProperties.$request = Request;
-	// app.config.globalProperties.$host = '1el9898253.oicp.vip/';
-	// app.config.globalProperties.$host = '192.168.213.153:3000';
-	app.config.globalProperties.$host = '127.0.0.1:3000';
+	// app.config.globalProperties.$host = 'http://1el9898253.oicp.vip/';
+	app.config.globalProperties.$host = 'http://10.201.133.232:3000';
+	// app.config.globalProperties.$host = 'http://127.0.0.1:3000';
 
 	return {
 		app

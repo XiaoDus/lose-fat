@@ -1,11 +1,11 @@
 const url_all = {
 	'DEV': 'http://127.0.0.1:3000', // 开发
-	'PRO': 'http://192.168.213.153:3000', // 生产
+	'PRO': 'http://10.201.133.232:3000', // 生产
 	'Reflection': 'http://1el9898253.oicp.vip/'
 }
 
-let BASEURL = url_all[ 'DEV' ] // 调整当前环境
-// let BASEURL = url_all[ 'PRO' ] // 调整当前环境
+// let BASEURL = url_all[ 'DEV' ] // 调整当前环境
+let BASEURL = url_all[ 'PRO' ] // 调整当前环境
 // let BASEURL = url_all[ 'Reflection' ] // 调整当前环境
 
 /*
