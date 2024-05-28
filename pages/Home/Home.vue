@@ -25,7 +25,7 @@
 					</view>
 				</navigator>
 				<navigator :url="userInfo != null ? '../../pageHome/Account/Account' : '../../pageLogin/Login/Login'">
-					<view class="center-list-item">
+					<view class="center-list-item border-bottom">
 						<view class="list-icon color-1"><img class="img" :src="`${proxy.$host}/file/download/Account.png`" alt="" /></view>
 						<text class="list-text">账号管理</text>
 						<view class="navigat-arrow"><uni-icons type="right" size="20"></uni-icons></view>
@@ -60,9 +60,10 @@
 </template>
 
 <script setup>
-import { getCurrentInstance, onMounted, ref } from 'vue';
+import {getCurrentInstance, ref} from 'vue';
+import {onShow} from '@dcloudio/uni-app';
+
 const { proxy } = getCurrentInstance();
-import { onShow } from '@dcloudio/uni-app';
 const { $request } = getCurrentInstance().appContext.config.globalProperties;
 
 const getUser = () => {
@@ -99,35 +100,8 @@ const getUser = () => {
 };
 onShow(() => {
 	getUser();
-	// 	login.value = uni.getStorageSync('token').length > 0 ? true : false;
-	// 	userInfo.value = uni.getStorageSync('user') ? uni.getStorageSync('user') : null;
-	// 	avatarUrl.value =
-	// 		userInfo.value != null
-	// 			? userInfo.value.avatar != null
-	// 				? userInfo.value.avatar
-	// 				: 'http://' + proxy.$host + '/file/download/login.png'
-	// 			: 'http://' + proxy.$host + '/file/download/login.png';
-	// 	message.value =
-	// 		userInfo.value != null
-	// 			? [
-	// 					{
-	// 						value: userInfo.value.userHeight,
-	// 						text: '身高'
-	// 					},
-	// 					{
-	// 						value: userInfo.value.userWeight,
-	// 						text: '体重'
-	// 					},
-	// 					{
-	// 						value: userInfo.value.standardWeigth,
-	// 						text: '标准体重'
-	// 					}
-	// 			  ]
-	// 			: null;
 });
-// onMounted(() => {
-// 	login.value = uni.getStorageSync('token').length > 0 ? true : false;
-// });
+
 const messageInfo = ref(null);
 const msgType = ref('success');
 const messageText = ref('');
@@ -175,29 +149,7 @@ const loginOrUpdate = () => {
 };
 </script>
 
-<style>
-@font-face {
-	font-family: texticons;
-	font-weight: normal;
-	font-style: normal;
-}
 
-page,
-view {
-	display: flex;
-}
-
-page {
-	background-size: 100vw 40vh;
-	background-repeat: no-repeat;
-	background-image: url(http://8.137.157.119:3000/file/download/loginbg.png);
-}
-
-.center {
-	flex-direction: column;
-	height: 100vh;
-}
-</style>
 <style lang="scss" scoped>
 $head-color: #fff;
 $white-color: #fff;
@@ -214,7 +166,27 @@ $width: calc(100vw - 0rpx);
 $head-height: 550rpx;
 $head-width: 120vw;
 $margin-left: -60vw;
+@font-face {
+  font-family: texticons;
+  font-weight: normal;
+  font-style: normal;
+}
 
+page,
+view {
+  display: flex;
+}
+
+.center {
+  background-size: 100vw 40vh;
+  background-repeat: no-repeat;
+  background-image: url(http://8.137.157.119:3000/file/download/loginbg.png);
+}
+
+.center {
+  flex-direction: column;
+  height: 100vh;
+}
 .bg {
 	width: 100vw;
 	height: 500rpx;

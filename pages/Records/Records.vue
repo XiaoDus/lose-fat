@@ -38,6 +38,7 @@ const goWeightList = (): void => {
 		url: '../../pageWeightList/WeightList/WeightList'
 	});
 };
+
 //获取当前日期函数
 const getNowFormatDate = (): string => {
 	let date = new Date(),

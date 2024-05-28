@@ -76,9 +76,10 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, getCurrentInstance } from 'vue';
-import { onLoad } from '@dcloudio/uni-app';
-const { proxy } = getCurrentInstance();
+    import {getCurrentInstance, ref} from 'vue';
+    import {onLoad} from '@dcloudio/uni-app';
+
+    const { proxy } = getCurrentInstance();
 const { $request } = getCurrentInstance().appContext.config.globalProperties;
 
 //获取用户信息
@@ -101,7 +102,6 @@ const getUserInfo = async (): Promise<void> => {
 	if (res.code === '200') {
 		useriInfo.value = res.data;
 	}
-	console.log(useriInfo.value);
 };
 //改变性别
 const changeSex = (sex: string) => {
