@@ -33,6 +33,7 @@
 
 		<view class="padding login-btn">
 			<button class="cu-btn block round bg-login-zl margin-tb-sm lg" @click="login">登 录</button>
+
 			<view v-if="selectWay == 'ssm'" @click="selectWay = 'password'" class="return">返回密码登录</view>
 		</view>
 
@@ -44,7 +45,7 @@
 			</view>
 			<view style="display: flex; justify-content: center">
 				<img class="img" :src="`${proxy.$host}/file/download/ssm.png`" @click="selectWay = 'ssm'" />
-				<img class="img" :src="`${proxy.$host}/file/download/wx.png`" />
+				<img class="img" :src="`${proxy.$host}/file/download/wx.png`" @click="wxLogin" />
 			</view>
 		</view>
 		<view>
@@ -75,32 +76,61 @@ const ssmMessage = reactive({
 	phone: null,
 	code: null
 });
+//去空格
+const trim = (str) => {
+	var reg = /[\t\r\f\n\s]*/g;
+	return str.replace(reg, '');
+};
 const getCode = ref('验证码');
 const getCodeBtn = ref(false);
+//发送验证码
 const getSmsCode = () => {
-	$request('/user/getCode?phone=' + ssmMessage.phone, 'POST').then((res) => {
-		if (res.code === '200') {
-			getCode.value = 60;
-			getCodeBtn.value = true;
-			let timer = setInterval(() => {
-				getCode.value -= 1;
-				if (getCode.value == 0) {
-					clearInterval(timer);
-					getCodeBtn.value = false;
-					getCode.value = '验证码';
-				}
-			}, 1000);
-		} else {
-			msgType.value = 'error';
-			messageText.value = res.message;
-			message.value.open();
-		}
-	});
+	if (ssmMessage.phone == null) {
+		msgType.value = 'error';
+		messageText.value = '请输入手机号！';
+		message.value.open();
+		return;
+	}
+	let pattern = /^1[3-9]\d{9}$/;
+	ssmMessage.phone = trim(ssmMessage.phone);
+	console.log(ssmMessage.phone);
+	if (pattern.test(ssmMessage.phone)) {
+		$request('/user/getCode?phone=' + ssmMessage.phone, 'POST').then((res) => {
+			if (res.code === '200') {
+				getCode.value = 60;
+				getCodeBtn.value = true;
+				let timer = setInterval(() => {
+					getCode.value -= 1;
+					if (getCode.value == 0) {
+						clearInterval(timer);
+						getCodeBtn.value = false;
+						getCode.value = '验证码';
+					}
+				}, 1000);
+			} else {
+				msgType.value = 'error';
+				messageText.value = res.message;
+				message.value.open();
+			}
+		});
+	} else {
+		msgType.value = 'error';
+		messageText.value = '手机号格式错误！';
+		message.value.open();
+	}
 };
 
 //登录请求
 const login = () => {
+	let pattern = /^1[3-9]\d{9}$/;
+	// passwordMessage.phone = trim(passwordMessage.phone);
 	if (selectWay.value == 'password') {
+		if (!pattern.test(passwordMessage.phone)) {
+			msgType.value = 'error';
+			messageText.value = '手机号格式错误！';
+			message.value.open();
+			return;
+		}
 		$request('/user/password_login', 'POST', passwordMessage).then((res) => {
 			if (res.code === '200') {
 				uni.setStorageSync('user', res.data);
@@ -115,6 +145,12 @@ const login = () => {
 			}
 		});
 	} else {
+		if (!pattern.test(ssmMessage.phone)) {
+			msgType.value = 'error';
+			messageText.value = '手机号格式错误！';
+			message.value.open();
+			return;
+		}
 		$request('/user/sms_login', 'POST', ssmMessage).then((res) => {
 			if (res.code === '200') {
 				uni.setStorageSync('user', res.data);
@@ -130,6 +166,30 @@ const login = () => {
 		});
 	}
 };
+
+// const getUserProfile = (e) => {
+// 	// 推荐使用wx.getUserProfile获取用户信息，开发者每次通过该接口获取用户个人信息均需用户确认
+// 	// 开发者妥善保管用户快速填写的头像昵称，避免重复弹窗
+// 	wx.getUserProfile({
+// 		desc: '用于完善会员资料', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
+// 		success: (res) => {
+// 			console.log(res);
+// 		}
+// 	});
+// };
+const wxLogin = () => {
+	// uni.login({
+	// 	success: (res) => {
+	// 		console.log(res);
+	// 	}
+	// });
+	uni.requestSubscribeMessage({
+		tmplIds: ['g5XYbMp7cEad6oDtV65gseJ9PdCFncCL8pH2sWaW3Ps'],
+		success(res) {
+			console.log(res);
+		}
+	});
+};
 </script>
 
 <style lang="less" scoped>
@@ -141,7 +201,7 @@ const login = () => {
 
 .top-bg {
 	width: 750rpx;
-	background-image: url(http://127.0.0.1:3000/file/download/loginbg.png);
+	background-image: url(http://8.137.157.119:3000/file/download/loginbg.png);
 	height: 420rpx;
 	padding-top: 50px;
 	background-size: 100%;

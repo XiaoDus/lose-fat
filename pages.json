@@ -26,9 +26,9 @@
 	"subPackages": [ {
 			"root": "pageHome",
 			"pages": [ {
-					"path": "UpdataPhone/UpdataPhone",
+					"path": "VerifyPhone/VerifyPhone",
 					"style": {
-						"navigationBarTitleText": "更换手机号",
+						"navigationBarTitleText": "验证手机号",
 						"enablePullDownRefresh": false
 					}
 				},
@@ -36,6 +36,27 @@
 					"path": "EditUser/EditUser",
 					"style": {
 						"navigationBarTitleText": "修改信息"
+					}
+				},
+				{
+					"path": "Account/Account",
+					"style": {
+						"navigationBarTitleText": "账号管理",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "UpdataPhoneEnd/UpdataPhoneEnd",
+					"style": {
+						"navigationBarTitleText": "更换手机号",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "EditPwd/EditPwd",
+					"style": {
+						"navigationBarTitleText": "更改密码",
+						"enablePullDownRefresh": false
 					}
 				}
 			]
@@ -102,6 +123,13 @@
 						"navigationBarTitleText": "",
 						"enablePullDownRefresh": false
 					}
+				},
+				{
+					"path": "MyCollect/MyCollect",
+					"style": {
+						"navigationBarTitleText": "我的收藏",
+						"enablePullDownRefresh": true
+					}
 				}
 			]
 		},
@@ -122,11 +150,23 @@
 	],
 
 	"preloadRule": {
-		"pageHome/UpdataPhone/UpdataPhone": {
+		"pageHome/VerifyPhone/VerifyPhone": {
+			"network": "all",
+			"packages": [ "pageHome" ]
+		},
+		"pageHome/EditPwd/EditPwd": {
+			"network": "all",
+			"packages": [ "pageHome" ]
+		},
+		"pageHome/UpdataPhoneEnd/UpdataPhoneEnd": {
 			"network": "all",
 			"packages": [ "pageHome" ]
 		},
 		"pageHome/EditUser/EditUser": {
+			"network": "all",
+			"packages": [ "pageHome" ]
+		},
+		"pageHome/Account/Account": {
 			"network": "all",
 			"packages": [ "pageHome" ]
 		},
@@ -139,6 +179,10 @@
 			"packages": [ "pageWeightList" ]
 		},
 		"pageSearch/Search/Search": {
+			"network": "all",
+			"packages": [ "pageSearch" ]
+		},
+		"pageSearch/MyCollect/MyCollect": {
 			"network": "all",
 			"packages": [ "pageSearch" ]
 		},
@@ -224,8 +268,16 @@
 
 			},
 			{
+				"name": "验证手机号", //模式名称
+				"path": "pageHome/VerifyPhone/VerifyPhone"
+
+			}, {
 				"name": "更换手机号", //模式名称
-				"path": "pageHome/UpdataPhone/UpdataPhone"
+				"path": "pageHome/UpdataPhoneEnd/UpdataPhoneEnd"
+
+			}, {
+				"name": "更换密码", //模式名称
+				"path": "pageHome/EditPwd/EditPwd"
 
 			},
 			{

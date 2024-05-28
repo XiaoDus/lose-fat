@@ -1,0 +1,1 @@
+<view class="{{['data-v-86c73a37', d]}}" style="{{e}}"><view class="wd-divider__line data-v-86c73a37" style="{{a}}"></view><view class="wd-divider__content data-v-86c73a37" style="{{b}}"><slot></slot></view><view class="wd-divider__line data-v-86c73a37" style="{{c}}"></view></view>

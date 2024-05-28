@@ -1,0 +1,1 @@
+.content{background-color:#f8f8f8;height:100vh}.content .phone{height:90%}.content .phone .uni-list-item{height:60px}.content .exit-login{padding:20px;background-color:#fff}.content .exit-login .btn{height:50px;line-height:50px;text-align:center;border-radius:25px;border:1px solid #e04350;color:#e04350;font-weight:500}

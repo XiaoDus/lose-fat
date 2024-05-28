@@ -519,7 +519,7 @@ const CollectIconType = reactive({
 //添加收藏
 const editCollect = async () => {
 	const res = await $request('/collect/edit_collect?foodId=' + foodMessage.value.foodId, 'GET');
-	if (res.code === 500) {
+	if (res.code === '500') {
 		uni.showToast({
 			title: '收藏失败',
 			duration: 2000

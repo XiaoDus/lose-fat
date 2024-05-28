@@ -1,0 +1,1 @@
+<view class="{{['data-v-f2b508ee', e]}}" style="{{f}}"><view wx:if="{{a}}" class="wd-loading__body data-v-f2b508ee"><view class="wd-loading__svg data-v-f2b508ee" style="{{b}}"></view></view><view wx:if="{{c}}" class="wd-loading__body data-v-f2b508ee"><view class="wd-loading__svg data-v-f2b508ee" style="{{d}}"></view></view></view>

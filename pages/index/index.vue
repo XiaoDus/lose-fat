@@ -25,10 +25,10 @@
 				</view>
 			</navigator>
 
-			<navigator url="/pages/Records/Records" open-type="switchTab" hover-class="none">
+			<navigator url="/pageSearch/MyCollect/MyCollect" hover-class="none">
 				<view class="box">
-					<img class="icon" :src="`${proxy.$host}/file/download/jilu.png`" alt="" />
-					<view class="text">体重记录</view>
+					<img class="icon" :src="`${proxy.$host}/file/download/myCollect.png`" alt="" />
+					<view class="text">我的收藏</view>
 				</view>
 			</navigator>
 

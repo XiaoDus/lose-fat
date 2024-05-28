@@ -1,10 +1,7 @@
 <script>
-	export default {
-		
-	}
+export default {};
 </script>
 
 <style>
-	/*每个页面公共css */
-
+/*每个页面公共css */
 </style>

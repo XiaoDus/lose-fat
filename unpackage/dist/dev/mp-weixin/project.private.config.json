@@ -1,0 +1,58 @@
+{
+  "description": "项目私有配置文件。此文件中的内容将覆盖 project.config.json 中的相同字段。项目的改动优先同步到此文件中。详见文档：https://developers.weixin.qq.com/miniprogram/dev/devtools/projectconfig.html",
+  "setting": {
+    "compileHotReLoad": false,
+    "lazyloadPlaceholderEnable": true,
+    "preloadBackgroundData": false,
+    "skylineRenderEnable": true
+  },
+  "libVersion": "3.4.4",
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "修改密码",
+          "pathName": "pageHome/EditPwd/EditPwd",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "首页",
+          "pathName": "pages/index/index",
+          "query": ""
+        },
+        {
+          "name": "个人中心",
+          "pathName": "pages/Home/Home",
+          "query": ""
+        },
+        {
+          "name": "登录",
+          "pathName": "pages/Login/Login",
+          "query": ""
+        },
+        {
+          "name": "修改信息",
+          "pathName": "pageHome/EditUser/EditUser",
+          "query": ""
+        },
+        {
+          "name": "验证手机号",
+          "pathName": "pageHome/VerifyPhone/VerifyPhone",
+          "query": ""
+        },
+        {
+          "name": "更换手机号",
+          "pathName": "pageHome/UpdataPhoneEnd/UpdataPhoneEnd",
+          "query": ""
+        },
+        {
+          "name": "记录",
+          "pathName": "pages/Records/Records",
+          "query": ""
+        }
+      ]
+    }
+  }
+}

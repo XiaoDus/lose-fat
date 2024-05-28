@@ -8,8 +8,11 @@
     {
       "root": "pageHome",
       "pages": [
-        "UpdataPhone/UpdataPhone",
-        "EditUser/EditUser"
+        "VerifyPhone/VerifyPhone",
+        "EditUser/EditUser",
+        "Account/Account",
+        "UpdataPhoneEnd/UpdataPhoneEnd",
+        "EditPwd/EditPwd"
       ]
     },
     {
@@ -32,7 +35,8 @@
         "moreMessage/moreMessage",
         "FoodCompare/FoodCompare",
         "FoodSort/FoodSort",
-        "FoodList/FoodList"
+        "FoodList/FoodList",
+        "MyCollect/MyCollect"
       ]
     },
     {
@@ -71,13 +75,31 @@
     ]
   },
   "preloadRule": {
-    "pageHome/UpdataPhone/UpdataPhone": {
+    "pageHome/VerifyPhone/VerifyPhone": {
+      "network": "all",
+      "packages": [
+        "pageHome"
+      ]
+    },
+    "pageHome/EditPwd/EditPwd": {
+      "network": "all",
+      "packages": [
+        "pageHome"
+      ]
+    },
+    "pageHome/UpdataPhoneEnd/UpdataPhoneEnd": {
       "network": "all",
       "packages": [
         "pageHome"
       ]
     },
     "pageHome/EditUser/EditUser": {
+      "network": "all",
+      "packages": [
+        "pageHome"
+      ]
+    },
+    "pageHome/Account/Account": {
       "network": "all",
       "packages": [
         "pageHome"
@@ -96,6 +118,12 @@
       ]
     },
     "pageSearch/Search/Search": {
+      "network": "all",
+      "packages": [
+        "pageSearch"
+      ]
+    },
+    "pageSearch/MyCollect/MyCollect": {
       "network": "all",
       "packages": [
         "pageSearch"

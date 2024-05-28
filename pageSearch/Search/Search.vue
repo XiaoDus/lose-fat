@@ -139,23 +139,30 @@ const getFoodById = async (foodId): Promise<void> => {
 				data: storageSearch.value.reverse()
 			});
 		}
+		//获取收藏信息
 		const collect = await $request('/collect/get_collect?foodId=' + foodId, 'GET');
-		foodMessage.collect = collect.data;
-		if (url.value === 'FoodMessage') {
+		if (collect.code === '401') {
 			uni.navigateTo({
-				url: '../FoodMessage/FoodMessage',
-				success: (res) => {
-					uni.$emit('foodMessage', foodMessage);
-					key.value = '';
-					clearSearchList();
-				}
+				url: '../../pageLogin/Login/Login'
 			});
-		} else if (url.value === 'FoodCompare') {
-			uni.navigateBack({
-				success: () => {
-					uni.$emit('getFoodmessage', foodMessage);
-				}
-			});
+		} else {
+			foodMessage.collect = collect.data;
+			if (url.value === 'FoodMessage') {
+				uni.navigateTo({
+					url: '../FoodMessage/FoodMessage',
+					success: (res) => {
+						uni.$emit('foodMessage', foodMessage);
+						key.value = '';
+						clearSearchList();
+					}
+				});
+			} else if (url.value === 'FoodCompare') {
+				uni.navigateBack({
+					success: () => {
+						uni.$emit('getFoodmessage', foodMessage);
+					}
+				});
+			}
 		}
 	}
 };

@@ -24,7 +24,13 @@
 						<view class="navigat-arrow"><uni-icons type="right" size="20"></uni-icons></view>
 					</view>
 				</navigator>
-
+				<navigator :url="userInfo != null ? '../../pageHome/Account/Account' : '../../pageLogin/Login/Login'">
+					<view class="center-list-item">
+						<view class="list-icon color-1"><img class="img" :src="`${proxy.$host}/file/download/Account.png`" alt="" /></view>
+						<text class="list-text">账号管理</text>
+						<view class="navigat-arrow"><uni-icons type="right" size="20"></uni-icons></view>
+					</view>
+				</navigator>
 				<view class="center-list-item">
 					<view class="list-icon color-1"><img class="img" :src="`${proxy.$host}/file/download/tongzhi.png`" alt="" /></view>
 					<text class="list-text">新消息通知</text>
@@ -184,11 +190,12 @@ view {
 page {
 	background-size: 100vw 40vh;
 	background-repeat: no-repeat;
-	background-image: url(http://127.0.0.1:3000/file/download/loginbg.png);
+	background-image: url(http://8.137.157.119:3000/file/download/loginbg.png);
 }
 
 .center {
 	flex-direction: column;
+	height: 100vh;
 }
 </style>
 <style lang="scss" scoped>

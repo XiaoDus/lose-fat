@@ -41,7 +41,6 @@ const getFoodClass = async (): Promise<void> => {
 		foodClasses.value = res.data;
 		isEmpty.value = false;
 	}
-	console.log(foodClasses.value);
 };
 onLoad(() => {
 	getFoodClass();

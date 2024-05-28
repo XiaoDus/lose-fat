@@ -19,41 +19,64 @@
     "ignoreUploadUnusedFiles": true
   },
   "compileType": "miniprogram",
-  "libVersion": "3.4.2",
+  "libVersion": "",
   "appid": "wx64df49989c043d5c",
   "projectname": "LoseFat",
   "condition": {
+    "search": {
+      "current": -1,
+      "list": []
+    },
+    "conversation": {
+      "current": -1,
+      "list": []
+    },
+    "game": {
+      "current": -1,
+      "list": []
+    },
     "miniprogram": {
+      "current": 0,
       "list": [
         {
           "name": "首页",
-          "pathName": "pages/index/index",
-          "query": ""
+          "id": 0,
+          "pathName": "pages/index/index"
         },
         {
           "name": "个人中心",
-          "pathName": "pages/Home/Home",
-          "query": ""
+          "id": 1,
+          "pathName": "pages/Home/Home"
         },
         {
           "name": "登录",
-          "pathName": "pages/Login/Login",
-          "query": ""
+          "id": 2,
+          "pathName": "pages/Login/Login"
         },
         {
           "name": "修改信息",
-          "pathName": "pageHome/EditUser/EditUser",
-          "query": ""
+          "id": 3,
+          "pathName": "pageHome/EditUser/EditUser"
+        },
+        {
+          "name": "验证手机号",
+          "id": 4,
+          "pathName": "pageHome/VerifyPhone/VerifyPhone"
         },
         {
           "name": "更换手机号",
-          "pathName": "pageHome/UpdataPhone/UpdataPhone",
-          "query": ""
+          "id": 5,
+          "pathName": "pageHome/UpdataPhoneEnd/UpdataPhoneEnd"
+        },
+        {
+          "name": "更换密码",
+          "id": 6,
+          "pathName": "pageHome/EditPwd/EditPwd"
         },
         {
           "name": "记录",
-          "pathName": "pages/Records/Records",
-          "query": ""
+          "id": 7,
+          "pathName": "pages/Records/Records"
         }
       ]
     }
