@@ -23,6 +23,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/file/**") //文件
                 .excludePathPatterns("/carousel/**") //轮播图
                 .excludePathPatterns("/knowledge/**") //每日一题
+                .excludePathPatterns("/foods/**") //食物搜索
                 .excludePathPatterns( // swagger3
                         "/swagger-resources/**",
                         "/webjars/**",

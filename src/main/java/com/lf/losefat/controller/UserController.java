@@ -15,7 +15,9 @@ import com.lf.losefat.controller.dto.EditPwd;
 import com.lf.losefat.controller.dto.PhoneLogin;
 import com.lf.losefat.controller.dto.SmsLogin;
 import com.lf.losefat.controller.dto.WxLogin;
+import com.lf.losefat.entity.AvatarFiles;
 import com.lf.losefat.entity.User;
+import com.lf.losefat.service.IFileService;
 import com.lf.losefat.service.IUserService;
 import com.lf.losefat.utils.*;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -40,6 +42,7 @@ import java.util.concurrent.CompletableFuture;
  * <p>
  * 用户管理
  * </p>
+ *
  * @author 小肚
  * @since 2024-03-22
  */
@@ -49,6 +52,8 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+    @Autowired
+    private IFileService fileService;
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate; //redis
@@ -57,7 +62,7 @@ public class UserController {
     public Result getUserOpenId(@RequestBody WxLogin wxLogin) throws InvalidAlgorithmParameterException, UnsupportedEncodingException {
         String wxLoginUrl = "https://api.weixin.qq.com/sns/jscode2session";
         //接口参数
-        String param = "appid=wx64df49989c043d5c&secret=71368bea214f94130a9367a7456940aa&js_code=" + wxLogin.getJs_code() + "&grant_type=authorization_code";
+        String param = "appid=wx64df49989c043d5c&secret=8916c0ab9804283235c0fc553b8db669&js_code=" + wxLogin.getJs_code() + "&grant_type=authorization_code";
         //调用获取session_key接口 请求方式get
         String jsonString = GetPostUntil.sendGet(wxLoginUrl, param);
         //因为json字符串是大括号包围，所以用JSONObject解析
@@ -168,8 +173,9 @@ public class UserController {
      */
     @PostMapping("/getCode")
     public Result getCode(String phone) throws Exception {
-        Integer code = (new Random().nextInt(9000) + 1000);
         String KEY = phone;
+        Integer code = new Random().nextInt(9000) + 1000;
+
         stringRedisTemplate.opsForValue().set(KEY, String.valueOf(code), Duration.ofMinutes(5));
         SendSmsResponseBody resBody = new Sample().sendSsm(phone, code);
         if (resBody.code.equals("OK")) {
@@ -187,33 +193,37 @@ public class UserController {
      */
     @PostMapping("/sms_login")
     public Result smsLogin(@RequestBody SmsLogin smsLogin) {
-        Integer code = Integer.valueOf(stringRedisTemplate.opsForValue().get(smsLogin.getPhone()));
-        if (smsLogin.getCode().equals(code)) {
-            QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-            userQueryWrapper.eq("user_phone", smsLogin.getPhone());
-            stringRedisTemplate.delete(smsLogin.getPhone());
-            User user = userService.getOne(userQueryWrapper);
-            if (user != null) {
-                String token = TokenUtils.genToken(user.getUserId(), smsLogin.getPhone());
-                user.setToken(token);
-                return Result.success(user);
+        String code = stringRedisTemplate.opsForValue().get(smsLogin.getPhone());
+        if (code != null) {
+            if (smsLogin.getCode().toString().equals(code)) {
+                QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+                userQueryWrapper.eq("user_phone", smsLogin.getPhone());
+                stringRedisTemplate.delete(smsLogin.getPhone());
+                User user = userService.getOne(userQueryWrapper);
+                if (user != null) {
+                    String token = TokenUtils.genToken(user.getUserId(), smsLogin.getPhone());
+                    user.setToken(token);
+                    return Result.success(user);
+                }
+                User newUser = new User();
+                String userId = generateUserId();
+                String token = TokenUtils.genToken(userId, smsLogin.getPhone());
+                newUser.setUserPhone(smsLogin.getPhone());
+                newUser.setUserPassword(Md5Util.getMD5String(userId.substring(0, 8)));
+                newUser.setUserId(userId);
+                newUser.setUserName(userId.substring(0, 8) + "用户");
+                newUser.setToken(token);
+                userService.save(newUser);
+                return Result.success(newUser);
             }
-            User newUser = new User();
-            String userId = generateUserId();
-            String token = TokenUtils.genToken(userId, smsLogin.getPhone());
-            newUser.setUserPhone(smsLogin.getPhone());
-            newUser.setUserPassword(Md5Util.getMD5String(userId.substring(0, 8)));
-            newUser.setUserId(userId);
-            newUser.setUserName(userId.substring(0, 8) + "用户");
-            newUser.setToken(token);
-            userService.save(newUser);
-            return Result.success(newUser);
+            return Result.error(Constants.CODE_400, "验证码错误！");
         }
         return Result.error(Constants.CODE_400, "验证码错误！");
     }
 
     /**
      * 修改用户名
+     *
      * @param editUserName 修改的用户名
      * @return 用户名信息
      */
@@ -232,6 +242,7 @@ public class UserController {
 
     /**
      * 更改密码
+     *
      * @param editPwd
      * @return
      */
@@ -240,24 +251,22 @@ public class UserController {
         User currentUser = TokenUtils.getCurrentUser();
         boolean b = false;
         if (currentUser != null) {
-            b = Md5Util.checkPassword(editPwd.getOldPwd(), currentUser.getUserPassword());
-        } else {
-            return Result.error(Constants.CODE_401, "Token失效！");
-        }
-        if (b) {
-            if (editPwd.getOldPwd().equals(editPwd.getNewPwd())) {
-                return Result.error(Constants.CODE_400, "两次密码不能一致！");
+            b = Md5Util.checkPassword(editPwd.getNewPwd(), currentUser.getUserPassword());
+            if (b) {
+                return Result.error(Constants.CODE_400, "新旧密码不能一致！");
             }
             currentUser.setUserPassword(Md5Util.getMD5String(editPwd.getNewPwd()));
             userService.updateById(currentUser);
             return Result.success(currentUser);
         }
-        return Result.error(Constants.CODE_400, "旧密码不一致！");
+        return Result.error(Constants.CODE_400, "token失效！");
+
     }
 
 
     /**
      * 保存用户数据
+     *
      * @param user
      * @return
      */
@@ -274,43 +283,86 @@ public class UserController {
             currentUser.setToken(token);
             return Result.success(currentUser);
         }
-        return Result.error(Constants.CODE_401,"Token失效！");
+        return Result.error(Constants.CODE_401, "Token失效！");
+    }
+
+
+    /**
+     * 更换手机号之前验证现手机号
+     *
+     * @param smsLogin
+     * @return
+     */
+    @PostMapping("/verifyPhone")
+    public Result verifyPhone(@RequestBody SmsLogin smsLogin) {
+        String code = stringRedisTemplate.opsForValue().get(smsLogin.getPhone());
+        if (code != null) {
+            if (Integer.valueOf(code).equals(smsLogin.getCode())) {
+                stringRedisTemplate.delete(smsLogin.getPhone());
+                return Result.success();
+            }
+            return Result.error(Constants.CODE_400, "验证码错误！");
+        }
+        return Result.error(Constants.CODE_400, "验证码错误 ！");
+
     }
 
     /**
      * 更改关联手机
+     *
      * @param smsLogin
      * @return
      */
     @PostMapping("/updatePhone")
-    public Result updatePhone(@RequestBody SmsLogin smsLogin){
+    public Result updatePhone(@RequestBody SmsLogin smsLogin) {
         User currentUser = TokenUtils.getCurrentUser();
-        Integer code = Integer.valueOf(stringRedisTemplate.opsForValue().get(smsLogin.getPhone()));
-        if (code.equals(smsLogin.getCode())){
-            QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-            userQueryWrapper.eq("user_phone",smsLogin.getPhone());
-            User one = userService.getOne(userQueryWrapper);
-            if (one!=null){
+        String code = stringRedisTemplate.opsForValue().get(smsLogin.getPhone());
+        if (code != null) {
+            if (Integer.valueOf(code).equals(smsLogin.getCode())) {
                 stringRedisTemplate.delete(smsLogin.getPhone());
-                return Result.error(Constants.CODE_400,"手机号已绑定其他账户！");
+                QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+                userQueryWrapper.eq("user_phone", smsLogin.getPhone());
+                User one = userService.getOne(userQueryWrapper);
+                if (one != null) {
+                    return Result.error(Constants.CODE_400, "手机号已绑定其他账户！");
+                }
+
+                currentUser.setUserPhone(smsLogin.getPhone());
+                userService.updateById(currentUser);
+                String token = TokenUtils.genToken(currentUser.getUserId(), currentUser.getUserPhone());
+                currentUser.setToken(token);
+                return Result.success(currentUser);
             }
-            stringRedisTemplate.delete(smsLogin.getPhone());
-            currentUser.setUserPhone(smsLogin.getPhone());
-            userService.updateById(currentUser);
-            String token = TokenUtils.genToken(currentUser.getUserId(), currentUser.getUserPhone());
-            currentUser.setToken(token);
-            return Result.success(currentUser);
+            return Result.error(Constants.CODE_400, "验证码错误！");
         }
-        return Result.error(Constants.CODE_400,"验证码错误！");
+        return Result.error(Constants.CODE_400, "验证码错误！");
+
+
     }
 
     /**
      * 获取用户信息
+     *
      * @return
      */
     @PostMapping("/getUser")
-    public Result getUser(){
+    public Result getUser() {
         return Result.success(TokenUtils.getCurrentUser());
+    }
+
+
+    /**
+     * 注销用户
+     *
+     * @return
+     */
+    @PostMapping("/deleteUser")
+    public Result deleteUser() {
+        User currentUser = TokenUtils.getCurrentUser();
+        QueryWrapper<AvatarFiles> filesQueryWrapper = new QueryWrapper<>();
+        filesQueryWrapper.eq("url", currentUser.getAvatar());
+        fileService.remove(filesQueryWrapper);
+        return userService.removeById(currentUser.getUserId()) ? Result.success() : Result.error(Constants.CODE_400, "删除失败！");
     }
 }
 

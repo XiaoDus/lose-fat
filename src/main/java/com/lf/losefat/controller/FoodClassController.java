@@ -94,19 +94,22 @@ public class FoodClassController {
      * @return
      */
     @GetMapping("/get_foodbyclass/")
-    public Result getFoodByClass(@RequestParam Integer id) {
-        List<FoodList> foods;
-        Object list = redisTemplate.opsForValue().get("" + id + "-foods");
+    public Result getFoodByClass(@RequestParam Integer id,Integer pageNum) {
+        Page<FoodList> page = new Page<>(pageNum,15);
+
+        Page<FoodList> foodListPage;
+        Object list = redisTemplate.opsForValue().get("foodsByClass-" + id +"-number-"+pageNum);
         if (ObjectUtil.isEmpty(list)) {
 
             QueryWrapper<FoodList> foodListQueryWrapper = new QueryWrapper<>();
             foodListQueryWrapper.eq("class_id", id);
-             foods = foodListService.list(foodListQueryWrapper);
-            redisTemplate.opsForValue().set("" + id  + "-foods" ,foods, Duration.ofMinutes(30));
+//              foodListService.list(foodListQueryWrapper);
+             foodListPage = foodListService.page(page, foodListQueryWrapper);
+            redisTemplate.opsForValue().set("foodsByClass-" + id +"-number-"+pageNum ,foodListPage);
         } else {
-            foods = (List<FoodList>) list;
+            foodListPage = (Page<FoodList>) list;
         }
-        return Result.success(foods);
+        return Result.success(foodListPage);
     }
 
 

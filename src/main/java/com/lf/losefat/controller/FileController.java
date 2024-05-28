@@ -43,7 +43,7 @@ public class FileController {
     private String fileUploadPath;
 
 //     @Value("${files.upload.upload}") //yml配置文件中的文件保存路径
-    private String ip;
+//    private String ip;
 
 
     @Autowired
@@ -82,7 +82,9 @@ public class FileController {
         if (currentUser != null) {
             one = getOneByUserId( currentUser.getUserId());
         }else {return "Token失效";}
-        url = "http://"+ip+"/file/download/" + fileUUID;
+        String ip = getIp();
+//        url = "http://"+ip+"/file/download/" + fileUUID;
+        url = "/file/download/" + fileUUID;
         if (one != null) {
             //删除用户保存在磁盘上的原图片
             String oneUrl = one.getUrl();
@@ -141,15 +143,16 @@ public class FileController {
 
     //定时器100s执行一次
     @Scheduled(fixedDelay = 100000)
-    public void getIp(){
+    public String getIp(){
         LinkedHashSet<String> strings = NetUtil.localIpv4s();
         for (String string : strings) {
             if (!string.equals("127.0.0.1") ) {
-                ip = string+":3000";
-                System.out.println(ip);
-                break;
+                String  ip = string+":3000";
+                return ip;
+
             }
         }
+        return  "127.0.0.1:3000";
     }
 
 

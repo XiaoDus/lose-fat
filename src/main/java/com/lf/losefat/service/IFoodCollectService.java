@@ -2,6 +2,9 @@ package com.lf.losefat.service;
 
 import com.lf.losefat.entity.FoodCollect;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.lf.losefat.entity.FoodList;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IFoodCollectService extends IService<FoodCollect> {
 
+    List<FoodList> MyCollectList(String userId);
 }

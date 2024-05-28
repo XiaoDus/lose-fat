@@ -12,8 +12,10 @@ public class Sample {
 
     @Value("${aliyun.AccessKeySecret}")
     private static String AccessKeySecret;
+
     /**
      * 使用AK&SK初始化账号Client
+     *
      * @param accessKeyId
      * @param accessKeySecret
      * @return Client
@@ -36,9 +38,9 @@ public class Sample {
 //        java.util.List<String> args = java.util.Arrays.asList(args_);
         com.aliyun.dysmsapi20170525.Client client = Sample.createClient();
         com.aliyun.dysmsapi20170525.models.SendSmsRequest sendSmsRequest = new com.aliyun.dysmsapi20170525.models.SendSmsRequest()
-                .setSignName("LoseFat")
+                .setSignName("轻身助手") //签名名称
                 .setPhoneNumbers(phone)
-                .setTemplateCode("SMS_465318144")
+                .setTemplateCode("SMS_465946722") //模版code
                 .setTemplateParam("{\"code\":\"" + code + "\"}");
         com.aliyun.teautil.models.RuntimeOptions runtime = new com.aliyun.teautil.models.RuntimeOptions();
         try {

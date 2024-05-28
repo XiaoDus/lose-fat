@@ -4,9 +4,11 @@ spring:
     name: LoseFat
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://8.137.157.119:3306/lose_fat?serverTimeZone=GMT%2b8
     url: jdbc:mysql://localhost:3306/lose_fat?serverTimeZone=GMT%2b8
     username: root
-    password: 123456
+#    password: 123456
+    password: 1007dzzxzz
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -31,9 +33,10 @@ mybatis-plus:
 
 files: #????????
   upload:
-    path: /Users/xiaodu/IdeaProjects/LoseFat/files/
-#    upload: 192.168.213.153:3000
+#    path: /Users/xiaodu/IdeaProjects/LoseFat/files/
     upload: 127.0.0.1:3000
+    path: /home/files/
+#        upload: 192.168.213.153:3000
 
 aliyun:
   AccessKeyId: LTAI5t8imLQeF1xq24fywm9j
