@@ -11,6 +11,13 @@
     "miniprogram": {
       "list": [
         {
+          "name": "登录",
+          "pathName": "pageLogin/Login/Login",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "修改密码",
           "pathName": "pageHome/EditPwd/EditPwd",
           "query": "",
@@ -25,11 +32,6 @@
         {
           "name": "个人中心",
           "pathName": "pages/Home/Home",
-          "query": ""
-        },
-        {
-          "name": "登录",
-          "pathName": "pages/Login/Login",
           "query": ""
         },
         {

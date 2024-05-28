@@ -1,12 +1,13 @@
 <template>
 	<view class="contaier">
 		<view class="top-bg">
-			<view class="text-white text-bold text-xxxl">轻身助手</view>
-			<view class="margin-top-xs text-white">欢迎使用，请先登录</view>
+			<view class="title">轻身助手</view>
+			<view class="welcome">欢迎使用，请先登录</view>
 		</view>
 
 		<view class="input-box padding-lr">
 			<!-- 密码登录 -->
+
 			<form v-if="selectWay == 'password'">
 				<view class="cu-form-group">
 					<view class="title">手机号</view>
@@ -34,7 +35,7 @@
 		<view class="padding login-btn">
 			<button class="cu-btn block round bg-login-zl margin-tb-sm lg" @click="login">登 录</button>
 
-			<view v-if="selectWay == 'ssm'" @click="selectWay = 'password'" class="return">返回密码登录</view>
+			<view @click="selectWay == 'ssm' ? (selectWay = 'password') : (selectWay = 'ssm')" class="return">返回{{ selectWay == 'ssm' ? '密码' : '验证码' }}登录</view>
 		</view>
 
 		<view class="other-login">
@@ -65,7 +66,7 @@ const msgType = ref('success');
 const messageText = ref('');
 const message = ref(null);
 // 登录方式
-const selectWay = ref('password');
+const selectWay = ref('ssm');
 //密码登录
 const passwordMessage = reactive({
 	phone: null,
@@ -81,7 +82,7 @@ const trim = (str) => {
 	var reg = /[\t\r\f\n\s]*/g;
 	return str.replace(reg, '');
 };
-const getCode = ref('验证码');
+const getCode = ref('获取验证码');
 const getCodeBtn = ref(false);
 //发送验证码
 const getSmsCode = () => {
@@ -95,24 +96,25 @@ const getSmsCode = () => {
 	ssmMessage.phone = trim(ssmMessage.phone);
 	console.log(ssmMessage.phone);
 	if (pattern.test(ssmMessage.phone)) {
-		$request('/user/getCode?phone=' + ssmMessage.phone, 'POST').then((res) => {
-			if (res.code === '200') {
-				getCode.value = 60;
-				getCodeBtn.value = true;
-				let timer = setInterval(() => {
-					getCode.value -= 1;
-					if (getCode.value == 0) {
-						clearInterval(timer);
-						getCodeBtn.value = false;
-						getCode.value = '验证码';
-					}
-				}, 1000);
-			} else {
-				msgType.value = 'error';
-				messageText.value = res.message;
-				message.value.open();
+		// $request('/user/getCode?phone=' + ssmMessage.phone, 'POST').then((res) => {
+		// 	if (res.code === '200') {
+		let number = 61;
+		getCodeBtn.value = true;
+		let timer = setInterval(() => {
+			number -= 1;
+			getCode.value = number + ' 秒';
+			if (number == 0) {
+				clearInterval(timer);
+				getCodeBtn.value = false;
+				getCode.value = '重新获取验证码';
 			}
-		});
+		}, 1000);
+		// 	} else {
+		// 		msgType.value = 'error';
+		// 		messageText.value = res.message;
+		// 		message.value.open();
+		// 	}
+		// });
 	} else {
 		msgType.value = 'error';
 		messageText.value = '手机号格式错误！';
@@ -192,22 +194,50 @@ const wxLogin = () => {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .contaier {
 	height: 100vh;
 	background-color: #ffffff;
-	color: #ffffff;
-}
+	.top-bg {
+		color: #ffffff;
+		width: 750rpx;
+		background-image: url(http://8.137.157.119:3000/file/download/loginbg.png);
+		height: 420rpx;
+		padding-top: 50px;
+		background-size: 100%;
+		background-repeat: no-repeat;
+		text-align: center;
+		font-size: 25px;
+		.title {
+			padding: 10px;
+		}
+	}
+	.input-box {
+		margin-top: 50px;
+		.form {
+			padding: 10px 10px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
 
-.top-bg {
-	width: 750rpx;
-	background-image: url(http://8.137.157.119:3000/file/download/loginbg.png);
-	height: 420rpx;
-	padding-top: 50px;
-	background-size: 100%;
-	background-repeat: no-repeat;
-	text-align: center;
-	font-size: 25px;
+			.input {
+				margin-top: 20px;
+				padding: 5px 10px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				border-bottom: 1px solid #9c9c9c;
+				.text {
+					font-size: 12px;
+					padding: 10px 0;
+					width: 40%;
+					align-items: center;
+					display: flex;
+					text-align: right;
+				}
+			}
+		}
+	}
 }
 
 .cu-form-group {
@@ -226,7 +256,6 @@ const wxLogin = () => {
 	}
 
 	.bg-login-zl {
-		width: 100px;
 		font-size: 15px;
 		background-image: linear-gradient(45deg, #727cfb, #46d0ed);
 		color: #ffffff;
