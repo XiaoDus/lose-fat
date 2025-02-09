@@ -8,6 +8,7 @@ import com.lf.losefat.entity.User;
 import com.lf.losefat.exception.ServiceException;
 import com.lf.losefat.service.IUserService;
 import jakarta.annotation.Resource;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.method.HandlerMethod;
@@ -31,14 +32,14 @@ public class JwtInterceptor implements HandlerInterceptor {
         if (StrUtil.isBlank(Authorization)) {
             throw new ServiceException(Constants.CODE_401,"无token，请重新登录");
         }
-        // 获取 Authorization 中的 open_id
+        // 获取 Authorization 中的 id
         String user_id;
         try {
             user_id = JWT.decode(Authorization).getAudience().get(0);
         } catch (JWTDecodeException j) {
             throw new ServiceException(Constants.CODE_401,"无token，请重新登录");
         }
-        //根据Authorization中的open_id查询数据库
+        //根据Authorization中的id查询数据库
         QueryWrapper<User> userinfoQueryWrapper = new QueryWrapper<>();
         userinfoQueryWrapper.eq("user_id",user_id);
         User user = userService.getOne(userinfoQueryWrapper);
