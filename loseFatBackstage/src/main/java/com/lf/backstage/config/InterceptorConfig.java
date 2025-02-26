@@ -13,16 +13,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtInterceptor())
                 .addPathPatterns("/**") // 拦截所有请求，通过判断token是否合法来决定是否需要登录
-                .excludePathPatterns( //登录注册
-                        "/user/wx_login",
-                        "/user/password_login",
-                        "/user/getCode",
-                        "/user/sms_login"
-                )
+                .excludePathPatterns("/user/**")
+                .excludePathPatterns("/user/verification")
                 .excludePathPatterns("/file/**") //文件
-                .excludePathPatterns("/carousel/**") //轮播图
-                .excludePathPatterns("/knowledge/**") //每日一题
-                .excludePathPatterns("/foods/**") //食物搜索
                 .excludePathPatterns( // swagger3
                         "swagger-ui/index.html",
                         "/swagger-resources/**",

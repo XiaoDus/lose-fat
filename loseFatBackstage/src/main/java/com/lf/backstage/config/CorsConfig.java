@@ -16,11 +16,27 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("*"); // 1 设置访问源地址
-        corsConfiguration.addAllowedHeader("*"); // 2 设置访问源请求头
-        corsConfiguration.addAllowedMethod("*"); // 3 设置访问源请求方法
+
+        // 使用 allowedOriginPatterns 来设置多个允许的来源，避免使用 "*"
+        corsConfiguration.addAllowedOriginPattern("http://192.168.0.107:8081");  // 前端地址
+        corsConfiguration.addAllowedOriginPattern("http://localhost:8081");      // 可以添加多个来源
+
+        // 允许所有的请求头
+        corsConfiguration.addAllowedHeader("*");
+
+        // 允许所有的请求方法
+        corsConfiguration.addAllowedMethod("*");
+
+        // 设置最大有效时长
         corsConfiguration.setMaxAge(MAX_AGE);
-        source.registerCorsConfiguration("/**", corsConfiguration); // 4 对接口配置跨域设置
+
+        // 允许携带凭证
+        corsConfiguration.setAllowCredentials(true);
+
+        // 注册跨域配置
+        source.registerCorsConfiguration("/**", corsConfiguration);
+
+        // 返回跨域过滤器
         return new CorsFilter(source);
     }
 }
