@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 @SpringBootApplication
-@MapperScan("com.lf.backstage.mapper")
+//@MapperScan("com.lf.backstage.mapper")
 public class LoseFatBackstageApplication {
 
     public static void main(String[] args) {

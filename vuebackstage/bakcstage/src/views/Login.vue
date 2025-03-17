@@ -49,7 +49,7 @@
 
 <script setup>
 import {ref, reactive, getCurrentInstance} from 'vue'
-import Identity from '@/components/Identify.vue'
+import Identity from '../components/Identify.vue'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue';
 const router = useRouter()
