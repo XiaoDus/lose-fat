@@ -18,3 +18,10 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.lf.backstage.entity
+
+files: #????????
+  upload:
+    path: D:\IdeaProjects\LoseFat\files\
+server:
+  port: 9000

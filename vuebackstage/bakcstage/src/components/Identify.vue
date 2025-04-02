@@ -171,12 +171,12 @@ const getRandomLineColor = () => {
 };
 const verificationCode = ref('')
 const getVerificationCode = async () => {
-  const verification =await proxy.request.get("/user",{ withCredentials: true })
+  const verification =await proxy.request.get("/login/verification",{ withCredentials: true })
   if (verification.code !== '200'){
     getVerificationCode()
     return
   }
-  const secretKey = '1234567890123456';  // 使用与后端相同的密钥
+  const secretKey = import.meta.env.VITE_APP_SECRET_KET;  // 使用与后端相同的密钥
   const decryptedBytes = CryptoJS.AES.decrypt(
       verification.data,
       CryptoJS.enc.Utf8.parse(secretKey),

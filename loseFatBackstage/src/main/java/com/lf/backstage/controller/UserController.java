@@ -12,6 +12,7 @@ import com.lf.backstage.entity.dto.UserLoginRequests;
 import com.lf.backstage.service.IUserService;
 import com.lf.backstage.utils.AESUtil;
 import com.lf.backstage.utils.Md5Util;
+import com.lf.backstage.utils.TokenUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.SneakyThrows;
@@ -20,11 +21,12 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Random;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author 小肚
@@ -38,41 +40,38 @@ public class UserController {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate; //redis
-    @GetMapping
-    public Result verification( HttpServletRequest request) throws Exception {
-        HttpSession session = request.getSession();
-        // hutool生成验证码
-        LineCaptcha captcha = CaptchaUtil.createLineCaptcha(160, 40, 4, 20);
-        String encryptCode = AESUtil.encrypt(captcha.getCode());
-        stringRedisTemplate.opsForValue().set(session.getId(), encryptCode, Duration.ofMinutes(5));
-        return Result.success(encryptCode);
+
+    @PostMapping("/list")
+    public Result userList() {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        // 筛选出不是管理员的用户
+        queryWrapper.ne("status", "0");
+        List<User> list = userService.list(queryWrapper);
+        return Result.success(list);
     }
 
-    @SneakyThrows
-    @PostMapping("/login")
-    public Result login(@RequestBody UserLoginRequests userInfo, HttpServletRequest request) {
-        String username = userInfo.getUsername();
-        String password = userInfo.getPassword();
-        String md5Pwd = Md5Util.getMD5String(password);
-        String verification = userInfo.getVerification();
-        String encryptCode = AESUtil.encrypt(verification);
+    @DeleteMapping("/delete/{id}")
+    public Result delete(@PathVariable String id) {
+        userService.removeById(id);
+        return Result.success();
+    }
+
+    @PostMapping("/edit")
+    public Result edit(@RequestBody User user) {
+        User currentUser = TokenUtils.getCurrentUser();
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_phone", username);
-        queryWrapper.eq("user_password", md5Pwd);
-        String redisCode = stringRedisTemplate.opsForValue().get(request.getSession().getId());
-        if (StrUtil.isNotBlank(redisCode) && encryptCode.equals(redisCode) ) {
-            stringRedisTemplate.delete(request.getSession().getId());
-            User user = userService.getOne(queryWrapper);
-            if (user == null) {
-                return Result.error(Constants.CODE_400,"用户名或密码错误");
+        queryWrapper.eq("user_phone", user.getUserPhone());
+        User one = userService.getOne(queryWrapper);
+        if (one != null ) {
+            if (currentUser.getUserPhone().equals(user.getUserPhone())) {
+                userService.updateById(user);
+                return Result.success();
             }
-            if(user.getStatus().equals("1")){
-                return Result.success(user);
-            }
-            return Result.error(Constants.CODE_401,"用户无权限");
-        }else {
-            return Result.error(Constants.CODE_400,"验证码错误");
+            return Result.error("409", "手机号已存在");
         }
+
+        userService.updateById(user);
+        return Result.success();
     }
 }
 

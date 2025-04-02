@@ -18,9 +18,10 @@ public class CorsConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         // 使用 allowedOriginPatterns 来设置多个允许的来源，避免使用 "*"
-        corsConfiguration.addAllowedOriginPattern("http://localhost:8080");  // 前端地址
-        corsConfiguration.addAllowedOriginPattern("http://localhost:5173");      // 可以添加多个来源
-        corsConfiguration.addAllowedOriginPattern("http://localhost:8081");      // 可以添加多个来源
+        corsConfiguration.addAllowedOriginPattern("http://192.168.0.105:5173");      // 可以添加多个来源
+        corsConfiguration.addAllowedOriginPattern("http://192.168.0.107:5173");      // 可以添加多个来源
+        corsConfiguration.addAllowedOriginPattern("http://192.168.0.103:5173");      // 可以添加多个来源
+
 
         // 允许所有的请求头
         corsConfiguration.addAllowedHeader("*");

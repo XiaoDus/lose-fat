@@ -1,14 +1,16 @@
-import { createStore } from 'vuex'
+import {defineStore} from 'pinia'
+import piniaPersistedState from 'pinia-plugin-persistedstate';
+export const useCounterStore = defineStore('userStore', {
+    state: () => ({
 
-export default createStore({
-  state: {
-  },
-  getters: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
-  }
+    }),
+    actions: {
+        logout() {
+            // 重置状态
+            this.$reset();
+            // 清除持久化存储的数据
+            localStorage.removeItem('userStore');  // 自动清除持久化的数据
+        },
+    },
+    persist:true
 })

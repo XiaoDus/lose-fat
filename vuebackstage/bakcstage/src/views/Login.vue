@@ -1,9 +1,9 @@
 <template>
   <a-row justify="center" align="middle" class="login-container">
     <a-col :span="13" style="display: flex; justify-content: center;">
-      <img  style="border-radius: 8px 0 0 8px;flex: 1" src="../assets/img.png" alt="" width="100%" height="400px">
+      <img style="border-radius: 8px 0 0 8px;flex: 1" src="../assets/img.png" alt="" width="100%" height="400px">
       <div class="login-box" style="width: 330px">
-<!--        <h2 class="login-title">欢迎登录</h2>-->
+        <!--        <h2 class="login-title">欢迎登录</h2>-->
         <a-form
             layout="vertical"
             @finish="onLogin"
@@ -16,21 +16,22 @@
               label="请输入用户名/手机号"
               name="username"
           >
-            <a-input :maxlength="11" placeholder="请输入用户名/手机号" v-model:value="formState.username" />
+            <a-input :maxlength="11" placeholder="请输入用户名/手机号" v-model:value="formState.username"/>
           </a-form-item>
 
           <a-form-item
               label="请输入您的密码"
               name="password"
           >
-            <a-input-password placeholder="请输入密码" v-model:value="formState.password" />
+            <a-input-password placeholder="请输入密码" v-model:value="formState.password"/>
           </a-form-item>
           <a-form-item
               label="请输入验证码"
               name="verification"
           >
             <div class="verification">
-              <a-input class="verification-input" placeholder="请输入验证码" :maxlength="4" v-model:value="formState.verification" />
+              <a-input class="verification-input" placeholder="请输入验证码" :maxlength="4"
+                       v-model:value="formState.verification"/>
               <Identity ref="IdentityChild"/>
             </div>
 
@@ -50,31 +51,36 @@
 <script setup>
 import {ref, reactive, getCurrentInstance} from 'vue'
 import Identity from '../components/Identify.vue'
-import { useRouter } from 'vue-router'
-import { message } from 'ant-design-vue';
+import {useRouter} from 'vue-router'
+import {message} from 'ant-design-vue';
+import {useCounterStore} from '../store/index.js'
+
+const store = useCounterStore()
 const router = useRouter()
 const {proxy} = getCurrentInstance()
 const IdentityChild = ref(null)
 const formRef = ref();
 const rules = {
   username: [
-    { required: true, message: '请输入用户名/手机号!' },
-    {  min: 6,max:11, message: '用户名/手机号长度不能小于11位!' },
+    {required: true, message: '请输入用户名/手机号!'},
+    {min: 6, max: 11, message: '用户名/手机号长度不能小于11位!'},
   ],
-  password: [{ required: true, message: '请输入密码!' }],
-  verification: [{ required: true,min:4, message: '请输入验证码!' }],
+  password: [{required: true, message: '请输入密码!'}],
+  verification: [{required: true, min: 4, message: '请输入验证码!'}],
 }
 const formState = reactive({
   username: '',
   password: '',
-  verification:''
+  verification: ''
 });
 const onLogin = async (values) => {
- const res = await proxy.request.post('/user/login',values,{ withCredentials: true })
-  if(res.code === '200'){
+  const res = await proxy.request.post('/login', values, {withCredentials: true})
+  if (res.code === '200') {
     message.success('登录成功');
+    // 保存用户信息
+    store.$state = res.data
     router.push('/index')
-  }else if(res.code === '400'){
+  } else if (res.code === '400') {
     IdentityChild.value.getVerificationCode()
     message.error(res.msg)
   }
@@ -104,11 +110,13 @@ const onLogin = async (values) => {
 .login-form {
   max-width: 100%;
 }
-.verification{
+
+.verification {
   display: flex;
   justify-content: center;
-  .verification-input{
-    border-radius:  6px 0  0 6px;
+
+  .verification-input {
+    border-radius: 6px 0 0 6px;
 
     border-right: 0;
   }

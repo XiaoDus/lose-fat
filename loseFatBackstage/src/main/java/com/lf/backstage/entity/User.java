@@ -3,6 +3,9 @@ package com.lf.backstage.entity;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -24,6 +27,7 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("用户id")
+    @TableId("user_id")
     private String userId;
 
     @ApiModelProperty("昵称")
@@ -57,12 +61,17 @@ public class User implements Serializable {
     private String avatar;
 
     @ApiModelProperty("用户密码")
+    @JsonIgnore
     private String userPassword;
 
     @ApiModelProperty("性别")
     private String userSex;
     @ApiModelProperty("身份")
     private String status;
+
+    @ApiModelProperty("token")
+    @TableField(exist = false)
+    private String token;
 
 
 }

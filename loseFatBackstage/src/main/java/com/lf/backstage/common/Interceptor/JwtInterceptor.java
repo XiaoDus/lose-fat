@@ -7,6 +7,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lf.backstage.common.Constants;
 import com.lf.backstage.entity.User;
 import com.lf.backstage.exception.ServiceException;
@@ -50,11 +51,11 @@ public class JwtInterceptor implements HandlerInterceptor {
             throw new ServiceException(Constants.CODE_401,"用户不存在，请重新登录");
         }
         // 用户密码加签验证 token
-        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(user.getUserPassword())).build();
+        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(user.getUserPhone())).build();
         try {
             jwtVerifier.verify(token);
         } catch (JWTVerificationException e) {
-            throw new ServiceException(Constants.CODE_401,"无token，请重新登录");
+            throw new ServiceException(Constants.CODE_401,"token失效，请重新登录");
         }
 
         return true;
