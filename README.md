@@ -58,7 +58,7 @@
    ```bash
    cd frontend
    npm install
-   npm run dev
+   vite dev
    ```
 
 ## 📌 后续扩展建议
