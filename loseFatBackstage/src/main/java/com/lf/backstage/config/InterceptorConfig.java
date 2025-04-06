@@ -15,7 +15,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**") // 拦截所有请求，通过判断token是否合法来决定是否需要登录
                 .excludePathPatterns("/login")
                 .excludePathPatterns("/login/verification")
-                .excludePathPatterns("/file/**") //文件
+                .excludePathPatterns("/file/upload") //文件
+                .excludePathPatterns("/file/download") //文件
+                .excludePathPatterns("/file/download/**") //文件
                 .excludePathPatterns( // swagger3
                         "swagger-ui/index.html",
                         "/swagger-resources/**",

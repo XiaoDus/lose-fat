@@ -13,6 +13,8 @@ import com.lf.backstage.service.IFoodListService;
 import com.lf.backstage.service.IFoodMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,23 +34,33 @@ public class FoodListController {
     private IFoodListService foodListService;
     @Autowired
     IFoodMessageService foodMessageService;
-
+    @Autowired
+    private RedisTemplate redisTemplate;
     @PostMapping("/list")
     public Result list(){
+        Object o = redisTemplate.opsForValue().get("foodList");
+        if (o!=null){
+            return Result.success((List<ResFoodList>) o);
+        }
         List<ResFoodList> list = foodListService.getList();
+        redisTemplate.opsForValue().set("foodList",list);
         return Result.success(list);
     }
     @PostMapping("/edit")
     public Result edit(@RequestBody FoodList foodList){
         FoodList foodList1 = new FoodList();
         BeanUtil.copyProperties(foodList, foodList1);
-        foodListService.updateById(foodList1);
+        boolean b = foodListService.updateById(foodList1);
+        if (b){
+            redisTemplate.delete("foodList");
+        }
         return Result.success();
     }
 
     @DeleteMapping("/delete/{id}")
     public Result delete(@PathVariable String id) {
         foodListService.removeById(id);
+        redisTemplate.delete("foodList");
         return Result.success();
     }
 }

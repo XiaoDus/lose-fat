@@ -7,9 +7,11 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.lf.backstage.common.Constants;
 import com.lf.backstage.common.Result;
 import com.lf.backstage.entity.AvatarFiles;
 import com.lf.backstage.entity.User;
+import com.lf.backstage.entity.dto.FileInfo;
 import com.lf.backstage.service.IFileService;
 import com.lf.backstage.service.IUserService;
 import com.lf.backstage.utils.TokenUtils;
@@ -17,6 +19,7 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,13 +44,15 @@ import java.util.stream.Collectors;
 public class FileController {
     @Value("${files.upload.path}") //yml配置文件中的文件保存路径
     private String fileUploadPath;
-
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Autowired
     private IFileService fileService;
 
     @Autowired
     private IUserService userService;
+
     @PostMapping("/upload")
     public String upFile(@RequestParam MultipartFile file) throws IOException {
         //获取文件名
@@ -77,8 +82,10 @@ public class FileController {
         //判断数据库是否存在相同记录
         AvatarFiles one = null;
         if (currentUser != null) {
-            one = getOneByUserId( currentUser.getUserId());
-        }else {return "Token失效";}
+            one = getOneByUserId(currentUser.getUserId());
+        } else {
+            return "Token失效";
+        }
         url = "/file/download/" + fileUUID;
         if (one != null) {
             //删除用户保存在磁盘上的原图片
@@ -104,7 +111,7 @@ public class FileController {
         user.setUserId(currentUser.getUserId());
         user.setAvatar(url);
         userService.updateById(user);
-
+        redisTemplate.delete("fileList");
         return url;
     }
 
@@ -129,24 +136,97 @@ public class FileController {
 
     }
 
-    public AvatarFiles getOneByUserId( String userId) {
+    public AvatarFiles getOneByUserId(String userId) {
         QueryWrapper<AvatarFiles> fileQueryWrapper = new QueryWrapper<>();
-        fileQueryWrapper.eq("user_id",userId);
-        return  fileService.getOne(fileQueryWrapper);
+        fileQueryWrapper.eq("user_id", userId);
+        return fileService.getOne(fileQueryWrapper);
 
     }
+
     @PostMapping("/list")
     public Result getFileList() {
-        List<AvatarFiles> list = fileService.getList();
-        List<String> userNames = list.stream()
-                .map(AvatarFiles::getUserName) // 提取 userName
-                .filter(Objects::nonNull) // 过滤掉 null 值
-                .distinct() // 去重
-                .collect(Collectors.toList()); // 收集到 List
-        Map<String, Object> response = new HashMap<>();
-        response.put("files", list);
-        response.put("userNames", userNames);
-        return Result.success(response);
+        File directory = new File(fileUploadPath);
+        List<FileInfo> fileList = new ArrayList<>();
+        if (directory.exists() && directory.isDirectory()) {
+            for (File file : directory.listFiles()) {
+                fileList.add(new FileInfo(
+                        file.getName(),
+                        file.getAbsolutePath(),
+                        file.length(),
+                        file.isDirectory()
+                ));
+            }
+        }
+        return Result.success(fileList);
+    }
+
+    @DeleteMapping("/delete/{url}")
+    public Result delete(@PathVariable String url) {
+
+        File file1 = new File(fileUploadPath + url);
+
+        if (deleteRecursively(file1)) {
+            // 文件删除成功后删除数据库记录
+            return Result.success();
+        } else {
+            return Result.error(Constants.CODE_400, "文件删除失败，数据库记录未删除");
+        }
+    }
+
+    @PostMapping("/adminUpload")
+    public String adminUpFile(@RequestParam MultipartFile file) throws IOException {
+        //获取文件名
+        String originalFilename = file.getOriginalFilename();
+        //获取文件类型（后缀名）
+        String type = FileUtil.extName(originalFilename);
+        //文件大小
+        long size = file.getSize();
+        //获取当前用户信息
+        User currentUser = TokenUtils.getCurrentUser();
+        if (currentUser == null) return "Token失效";
+        //定义一个文件唯一的标识码
+        String uuid = IdUtil.fastSimpleUUID();
+        String fileUUID = uuid + StrUtil.DOT + type;  //StrUtil.DOT ==>uuid + . + png
+        File uploadFile = new File(fileUploadPath + fileUUID);
+
+        //判断父级目录（/files/ + 1.png）是否存在，否则新建改文件目录
+        if (!uploadFile.getParentFile().exists()) {
+            uploadFile.getParentFile().mkdirs();
+        }
+
+        //获取文件下载路径
+        String url;
+        //把获取到的文件存储到磁盘目录
+        file.transferTo(uploadFile);
+
+        url = "/file/download/" + fileUUID;
+
+
+        return url;
+    }
+    /**
+     * 递归删除文件或目录
+     * @param file 文件或目录
+     * @return 是否删除成功
+     */
+    public static boolean deleteRecursively(File file) {
+        if (!file.exists()) {
+            return false;
+        }
+
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File subFile : files) {
+                    if (!deleteRecursively(subFile)) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return file.delete(); // 删除文件本身或空目录
     }
 
 }
+

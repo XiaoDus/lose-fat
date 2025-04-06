@@ -38,8 +38,6 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate; //redis
 
     @PostMapping("/list")
     public Result userList() {

@@ -46,8 +46,8 @@
               <TableComponents v-if="selectedKeys[0] == '2'" columns-name="user" />
               <TableComponents v-else-if="selectedKeys[0] == '3'"  columns-name="food" />
               <TableComponents v-else-if="selectedKeys[0] == '4'"  columns-name="file" />
-              <TableComponents v-else-if="selectedKeys[0] == '5'"  columns-name="file" />
-              <TableComponents v-else-if="selectedKeys[0] == '6'"  columns-name="file" />
+              <TableComponents v-else-if="selectedKeys[0] == '5'"  columns-name="knowledge" />
+              <TableComponents v-else-if="selectedKeys[0] == '6'"  columns-name="knowledge" />
             </div>
           </a-layout-content>
 <!--          <a-layout-footer :style="{ textAlign: 'center',zIndex:1 }">Ant Design ©2018 Created by Ant UED</a-layout-footer>-->

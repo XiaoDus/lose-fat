@@ -8,7 +8,16 @@
                 position:['bottomCenter']
 
              }"
-             size="small" :bordered="true" :title="()=>h('h2',tableTitle)">
+             size="small" :bordered="true">
+      <template #title>
+        <div class="title">
+          <div class="title-text">{{ tableTitle }}</div>
+          <div class="uploadBtn">
+            <a-button v-if="props.columnsName === 'file'" @click="uploadFileOpen = true">上传图片</a-button>
+          </div>
+        </div>
+
+      </template>
       <template
           #customFilterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }"
       >
@@ -62,12 +71,16 @@
            <span v-else-if="Number(text) === 3"><emotion-unhappy theme="filled" size="15" fill="#d0021b"
                                                                  style="vertical-align: middle;margin-right: 7px"/>不健康</span>
         </span>
-        <span v-else-if="column.dataIndex === 'url'" class="healthLevel">
+        <span v-else-if="column.dataIndex === 'name'" class="healthLevel">
             <a-typography-paragraph copyable>
-    <a @click="() => setVisible(true,API_URL+text)">{{ API_URL }}{{ text }}</a>
+    <a @click="() => {setVisible(true,API_URL+'/file/download/'+text)}">{{ text }}</a>
   </a-typography-paragraph>
-
-
+        </span>
+        <span v-else-if="column.dataIndex === 'directory'" class="healthLevel">
+    {{ text === true ? '是' : '否' }}
+        </span>
+        <span v-else-if="column.dataIndex === 'size'" class="healthLevel">
+    {{ bytesToMB(text) }}
         </span>
         <span v-else-if="column.dataIndex === 'className'" class="className">
             <rice v-if="text === '主食类'" theme="multi-color" size="15" :fill="['#333' ,'#2F88FF' ,'#FFF' ,'#43CCF8']"
@@ -97,7 +110,7 @@
           {{ text }}
           </span>
         <span v-else-if="column.dataIndex === 'edit'" class="editBtn">
-            <a-button size="small" :icon="h(Editor)" class="btn-text"
+            <a-button v-if="props.columnsName !== 'file'" size="small" :icon="h(Editor)" class="btn-text"
                       @click="controlsBtn('edit',record,index)">修改</a-button>
           <a-popconfirm title="确认删除食物吗？" placement="topLeft" @confirm="controlsBtn('delete',record,index)">
             <template #icon><alarm theme="outline" size="15" fill="red" style="vertical-align: text-top"/></template>
@@ -106,6 +119,7 @@
           </span>
       </template>
       <template #footer>数据：{{ List.length }}条</template>
+
     </a-table>
   </div>
 
@@ -315,12 +329,80 @@
         :src="imageUrl"
     />
   </div>
+  <a-modal v-model:open="uploadFileOpen" title="上传图片" :footer="null" destroyOnClose>
+    <div>
+      <a-upload-dragger
+          name="file"
+          :maxCount="1"
+          :headers="{'token':token}"
+          :action="API_URL+'/file/adminUpload'"
+          list-type="picture"
+          @change="handleChange"
+      >
+        <p class="ant-upload-drag-icon">
+          <inbox-outlined></inbox-outlined>
+        </p>
+        <p class="upload-text">单击或拖动文件到此区域进行上传</p>
+      </a-upload-dragger>
+
+    </div>
+  </a-modal>
   <!-- 文件管理 end-->
+
+  <!-- 题库 -->
+  <a-modal v-model:open="editKnowledgeOpen" title="修改用户信息" :footer="null">
+    <div>
+      <a-form
+          ref="editKnowledgeRef"
+          :model="editKnowledgeForm"
+          name="basic"
+          :label-col="{ span: 4 }"
+          :wrapper-col="{ span: 20 }"
+          :rules="EditUserRules"
+          autocomplete="off"
+          @finish="handleKnowledgeFoodOk"
+      >
+        <a-row>
+          <a-col :span="24">
+            <a-form-item required label="食物名称" name="question">
+              <a-textarea auto-size v-model:value="editKnowledgeForm.question"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item required label="食物名称" name="correctAnswer">
+              <a-textarea auto-size v-model:value="editKnowledgeForm.correctAnswer"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item required label="食物名称" name="wrongAnswer">
+              <a-textarea auto-size v-model:value="editKnowledgeForm.wrongAnswer"/>
+            </a-form-item>
+          </a-col>
+
+        </a-row>
+        <a-form-item :wrapper-col="{ span: 14, offset: 8 }">
+          <a-button type="primary" html-type="submit" class="btn-text" :loading="editKnowledgeLoading">
+            <template #icon>
+              <save style="vertical-align: sub;margin-right: 2px" theme="outline" size="15" fill="#fff"/>
+            </template>
+            保存
+          </a-button>
+          <a-button style="margin-left: 10px" @click="resetKnowledgeEditForm">
+            <template #icon>
+              <close-one style="vertical-align: sub;margin-right: 2px" theme="outline" size="15" fill="#000"/>
+            </template>
+            取消
+          </a-button>
+        </a-form-item>
+      </a-form>
+    </div>
+  </a-modal>
+  <!-- 题库 end-->
 </template>
 
 <script setup>
 import dayjs from 'dayjs'
-import UserList from "./UserList.vue";
+import {useCounterStore} from '../store/index.js'
 import {
   Filter,
   Search,
@@ -345,9 +427,12 @@ import {
   Garlic,
   Cola
 } from "@icon-park/vue-next";
-import {ref, reactive, h, defineProps, getCurrentInstance, onMounted, nextTick} from "vue";
+import {InboxOutlined} from '@ant-design/icons-vue';
+import {ref, reactive, h, getCurrentInstance, onMounted, nextTick} from "vue";
 import {message} from "ant-design-vue";
 
+const store = useCounterStore()
+const token = store.$state.token
 const {proxy} = getCurrentInstance()
 const API_URL = import.meta.env.VITE_APP_API_URL_DEV
 const props = defineProps({
@@ -548,25 +633,22 @@ const columns = ref({
   ],
   file: [
     {
-      title: 'id',
-      dataIndex: 'id',
-      key: 'id',
-      width: 50,
+      title: '文件名',
+      dataIndex: 'name',
+      key: 'name',
+      width: 200,
     },
     {
-      title: '链接地址',
-      dataIndex: 'url',
-      key: 'url',
+      title: '是否是文件夹',
+      dataIndex: 'directory',
+      key: 'directory',
       width: 300
     },
     {
-      title: '用户名',
-      dataIndex: 'userName',
-      key: 'userName',
+      title: '大小',
+      dataIndex: 'size',
+      key: 'size',
       width: 150,
-      filterIcon: () => h(Filter),
-      filters: [],
-      onFilter: (value, record) => record.userName === value,
     },
     {
       title: '操作',
@@ -575,7 +657,39 @@ const columns = ref({
       align: 'center',
       width: 100,
     },
-  ]
+  ],
+  knowledge: [
+    {
+      title: '问题',
+      dataIndex: 'question',
+      key: 'question',
+      width: 200,
+    },
+    {
+      title: '错误答案',
+      dataIndex: 'wrongAnswer',
+      key: 'wrongAnswer',
+      width: 200,
+    },
+    {
+      title: '正确答案',
+      dataIndex: 'correctAnswer',
+      key: 'correctAnswer',
+      width: 200,
+    },
+    {
+      title: '被选择的次数',
+      dataIndex: 'selectNumber',
+      key: 'selectNumber',
+      width: 70,
+    },
+    {
+      title: '操作',
+      dataIndex: 'edit',
+      key: 'edit',
+      align: 'center',
+      width: 100,
+    }]
 })
 const controlsBtn = (status, record, index) => {
   if (status === 'edit') {
@@ -586,6 +700,10 @@ const controlsBtn = (status, record, index) => {
       case "food":
         showEditFoodModal(record, index);
         break;
+      case "knowledge":
+        showEditKnowledgeModal(record, index);
+        break;
+
     }
   } else if (status === 'delete') {
     switch (props.columnsName) {
@@ -594,6 +712,12 @@ const controlsBtn = (status, record, index) => {
         break;
       case "food":
         deleteFood(record.foodId, index);
+        break;
+      case "file":
+        deleteFile(record.name, index);
+        break;
+      case "knowledge":
+        deleteKnowledge(record.id, index);
         break;
     }
   }
@@ -800,22 +924,123 @@ const getFoodList = async () => {
 // ----------------------  文件管理  -------------------------------------------
 const visible = ref(false);
 const imageUrl = ref('')
+const uploadFileOpen = ref(false);
+const handleChange = (info) => {
+  const status = info.file.status;
+  if (status !== 'uploading') {
+    console.log(info.file, info.fileList);
+  }
+  if (status === 'done') {
+    message.success(`${info.file.name} 上传成功！`);
+    getFileList();
+  } else if (status === 'error') {
+    message.error(`${info.file.name} 上传失败！.`);
+  }
+};
 const setVisible = (value, url) => {
-  console.log(url)
+  if (url === true) {
+    visible.value = value;
+    return
+  }
+
   visible.value = value;
   imageUrl.value = url
 };
+
+// 删除文件
+const deleteFile = async (url, index) => {
+  const urlUuid = url.split("/").pop();
+  const res = await proxy.request.delete('/file/delete/' + urlUuid)
+  if (res.code === '200') {
+    List.value.splice(index, 1);
+    message.success('删除成功！')
+  } else {
+    message.error(res.msg)
+  }
+}
+const bytesToMB = (bytes, decimal = 2) => {
+  if (typeof bytes !== 'number' || isNaN(bytes)) {
+    throw new TypeError('bytes 必须是数字类型');
+  }
+  if (bytes < 0) {
+    throw new RangeError('bytes 不能为负数');
+  }
+
+  const KB = 1024;
+  const MB = 1024 * 1024;
+
+  if (bytes >= MB) {
+    return `${(bytes / MB).toFixed(decimal)} MB`;
+  } else if (bytes >= KB) {
+    return `${(bytes / KB).toFixed(decimal)} KB`;
+  } else {
+    return `${bytes} B`;
+  }
+}
 const getFileList = async () => {
   const res = await proxy.request.post('file/list')
   if (res.code === '200') {
-    List.value = res.data.files
-    res.data.userNames.forEach(userName => {
-      columns.value.file[2].filters.push({text: userName, value: userName})
-    })
+    List.value = res.data
 
   }
 }
 // ----------------------  文件管理 end ----------------------------------------
+// ----------------------  题库管理 --------------------------------------------
+const editKnowledgeOpen = ref(false)
+const editKnowledgeLoading = ref(false)
+const editKnowledgeRef = ref(null)
+const editKnowledgeIndex = ref(0)
+const editKnowledgeForm = ref({})
+const showEditKnowledgeModal = (record, index) => {
+  editKnowledgeForm.value = {...record}
+  editKnowledgeForm.value.classId = String(editKnowledgeForm.value.id)
+  editKnowledgeForm.value.question = String(editKnowledgeForm.value.question)
+  editKnowledgeForm.value.correctAnswer = String(editKnowledgeForm.value.correctAnswer)
+  editKnowledgeForm.value.wrongAnswer = String(editKnowledgeForm.value.wrongAnswer)
+  editKnowledgeOpen.value = true
+  editKnowledgeIndex.value = index
+}
+const handleKnowledgeFoodOk = async (values) => {
+  editKnowledgeLoading.value = true
+  const res = await proxy.request({
+    url: '/knowledge/edit',
+    method: 'post',
+    data: editKnowledgeForm.value
+  })
+  if (res.code === '200') {
+    setTimeout(async () => {
+      message.success('保存成功!')
+      List.value[editKnowledgeIndex.value] = {...editKnowledgeForm.value};
+      editKnowledgeLoading.value = false
+      editKnowledgeOpen.value = false
+      await nextTick()
+    }, 1000)
+  } else {
+    setTimeout(() => {
+      message.error(res.msg)
+      editFoodLoading.value = false
+    }, 1000)
+  }
+};
+const resetKnowledgeEditForm = () => {
+  editKnowledgeRef.value.resetFields();
+  editKnowledgeOpen.value = false
+}
+const deleteKnowledge = async (id, index) => {
+  const res = await proxy.request.delete(`/knowledge/delete/${id}`)
+  if (res.code === '200') {
+    List.value.splice(index, 1);
+    message.success('删除成功！')
+  }
+}
+const getKnowledgeList = async () => {
+  const res = await proxy.request.post('knowledge/list')
+  if (res.code === '200') {
+    List.value = res.data
+
+  }
+}
+// ----------------------  题库管理 end ----------------------------------------
 
 onMounted(() => {
   switch (props.columnsName) {
@@ -831,6 +1056,10 @@ onMounted(() => {
       tableTitle.value = '文件管理'
       getFileList();
       break;
+    case "knowledge":
+      tableTitle.value = '题库管理'
+      getKnowledgeList();
+      break;
   }
 })
 </script>
@@ -845,6 +1074,17 @@ onMounted(() => {
 
   .table {
     border-radius: 8px;
+
+    .title {
+      .title-text {
+        font-size: 1.3em;
+        font-weight: bold;
+      }
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
   }
 }
 
@@ -887,5 +1127,19 @@ onMounted(() => {
 
 .selectComponentClass {
   width: 200px;
+}
+
+.upload-list-inline :deep(.ant-upload-list-item) {
+  float: left;
+  width: 200px;
+  margin-right: 8px;
+}
+
+.upload-list-inline [class*='-upload-list-rtl'] :deep(.ant-upload-list-item) {
+  float: right;
+}
+
+.upload-text {
+  padding: 10px;
 }
 </style>
