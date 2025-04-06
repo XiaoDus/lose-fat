@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lf.losefat.mapper.FoodKnowledgeMapper">
+    <select id="getQuestion" resultType="com.lf.losefat.entity.FoodKnowledge">
+        SELECT *
+        FROM food_knowledge
+        WHERE select_number = (SELECT MIN(select_number) FROM food_knowledge)
+        ORDER BY RAND()
+        LIMIT 1;
+    </select>
+</mapper>
