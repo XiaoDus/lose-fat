@@ -43,11 +43,12 @@
         <a-layout>
           <a-layout-content>
             <div class="content">
+              <Home v-if="selectedKeys[0] == '1'"  v-model:selectedKeys="selectedKeys" />
               <TableComponents v-if="selectedKeys[0] == '2'" columns-name="user" />
               <TableComponents v-else-if="selectedKeys[0] == '3'"  columns-name="food" />
               <TableComponents v-else-if="selectedKeys[0] == '4'"  columns-name="file" />
               <TableComponents v-else-if="selectedKeys[0] == '5'"  columns-name="knowledge" />
-              <TableComponents v-else-if="selectedKeys[0] == '6'"  columns-name="knowledge" />
+              <AdminInfo v-else-if="selectedKeys[0] == '6'" />
             </div>
           </a-layout-content>
 <!--          <a-layout-footer :style="{ textAlign: 'center',zIndex:1 }">Ant Design ©2018 Created by Ant UED</a-layout-footer>-->
@@ -61,6 +62,8 @@
 <script setup>
 import {reactive, ref, watch, VueElement, h, onMounted} from 'vue';
 import TableComponents from '../components/TableComponents.vue';
+import AdminInfo from "./AdminInfo.vue";
+import Home from './Home.vue'
 import {
   Layers,
   HomeTwo,
@@ -124,12 +127,11 @@ const items = reactive([
     getItem('食物管理', '3', () => h(AvocadoOne)),
     getItem('文件管理', '4', () => h(FileEditingOne)),
     getItem('题库管理', '5', () => h(ThinkingProblem)),
-    getItem('轮播图管理', '6', () => h(Carousel)),
   ]),
 
   {type: 'divider'},
 
-  getItem('管理员', '9', () => h(User),),
+  getItem('管理员', '6', () => h(User),),
 
 ]);
 

@@ -1,16 +1,32 @@
-import {defineStore} from 'pinia'
-import piniaPersistedState from 'pinia-plugin-persistedstate';
+// store/index.js
+import { defineStore } from 'pinia'
+
 export const useCounterStore = defineStore('userStore', {
     state: () => ({
-
+        userId: '',
+        userName: '',
+        userPhone: '',
+        userSex: '',
+        userBirthday: '',
+        userAge: 0,
+        avatar: '',
+        token: '',
+        // 如果有其他字段也可以继续加，比如登录状态等
     }),
+
     actions: {
+        // ✅ 通用更新方法
+        updateUser(payload) {
+            Object.assign(this, payload)
+        },
+
+        // ✅ 登出清空
         logout() {
-            // 重置状态
-            this.$reset();
-            // 清除持久化存储的数据
-            localStorage.removeItem('userStore');  // 自动清除持久化的数据
+            this.$reset()
+            localStorage.removeItem('userStore')
         },
     },
-    persist:true
+
+    // ✅ 开启持久化
+    persist: true,
 })

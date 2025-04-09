@@ -14,6 +14,7 @@
           <div class="title-text">{{ tableTitle }}</div>
           <div class="uploadBtn">
             <a-button v-if="props.columnsName === 'file'" @click="uploadFileOpen = true">上传图片</a-button>
+            <a-button v-if="props.columnsName === 'knowledge'" @click="AddTopicBtn">添加题目</a-button>
           </div>
         </div>
 
@@ -350,7 +351,7 @@
   <!-- 文件管理 end-->
 
   <!-- 题库 -->
-  <a-modal v-model:open="editKnowledgeOpen" title="修改用户信息" :footer="null">
+  <a-modal v-model:open="editKnowledgeOpen" title="修改题目信息" :footer="null">
     <div>
       <a-form
           ref="editKnowledgeRef"
@@ -364,17 +365,17 @@
       >
         <a-row>
           <a-col :span="24">
-            <a-form-item required label="食物名称" name="question">
+            <a-form-item required label="题目" name="question">
               <a-textarea auto-size v-model:value="editKnowledgeForm.question"/>
             </a-form-item>
           </a-col>
           <a-col :span="24">
-            <a-form-item required label="食物名称" name="correctAnswer">
+            <a-form-item required label="正确答案" name="correctAnswer">
               <a-textarea auto-size v-model:value="editKnowledgeForm.correctAnswer"/>
             </a-form-item>
           </a-col>
           <a-col :span="24">
-            <a-form-item required label="食物名称" name="wrongAnswer">
+            <a-form-item required label="错误答案" name="wrongAnswer">
               <a-textarea auto-size v-model:value="editKnowledgeForm.wrongAnswer"/>
             </a-form-item>
           </a-col>
@@ -388,6 +389,52 @@
             保存
           </a-button>
           <a-button style="margin-left: 10px" @click="resetKnowledgeEditForm">
+            <template #icon>
+              <close-one style="vertical-align: sub;margin-right: 2px" theme="outline" size="15" fill="#000"/>
+            </template>
+            取消
+          </a-button>
+        </a-form-item>
+      </a-form>
+    </div>
+  </a-modal>
+  <a-modal v-model:open="AddTopicOpen" title="添加题目" :footer="null">
+    <div>
+      <a-form
+          ref="AddTopicRef"
+          :model="AddTopicForm"
+          name="basic"
+          :label-col="{ span: 4 }"
+          :wrapper-col="{ span: 20 }"
+          autocomplete="off"
+          @finish="handleAddTopicOk"
+      >
+        <a-row>
+          <a-col :span="24">
+            <a-form-item required label="题目" name="question">
+              <a-textarea auto-size v-model:value="AddTopicForm.question"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item required label="正确答案" name="correctAnswer">
+              <a-textarea auto-size v-model:value="AddTopicForm.correctAnswer"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item required label="错误答案" name="wrongAnswer">
+              <a-textarea auto-size v-model:value="AddTopicForm.wrongAnswer"/>
+            </a-form-item>
+          </a-col>
+
+        </a-row>
+        <a-form-item :wrapper-col="{ span: 14, offset: 8 }">
+          <a-button type="primary" html-type="submit" class="btn-text" :loading="AddTopicLoading">
+            <template #icon>
+              <save style="vertical-align: sub;margin-right: 2px" theme="outline" size="15" fill="#fff"/>
+            </template>
+            保存
+          </a-button>
+          <a-button style="margin-left: 10px" @click="resetAddTopicForm">
             <template #icon>
               <close-one style="vertical-align: sub;margin-right: 2px" theme="outline" size="15" fill="#000"/>
             </template>
@@ -985,6 +1032,7 @@ const getFileList = async () => {
   }
 }
 // ----------------------  文件管理 end ----------------------------------------
+
 // ----------------------  题库管理 --------------------------------------------
 const editKnowledgeOpen = ref(false)
 const editKnowledgeLoading = ref(false)
@@ -1031,6 +1079,40 @@ const deleteKnowledge = async (id, index) => {
   if (res.code === '200') {
     List.value.splice(index, 1);
     message.success('删除成功！')
+  }
+}
+const AddTopicOpen = ref(false)
+const AddTopicLoading = ref(false)
+const AddTopicForm = ref({})
+const AddTopicRef = ref(null)
+const AddTopicBtn = ()=>{
+  AddTopicForm.value.question = ''
+  AddTopicForm.value.correctAnswer = ''
+  AddTopicForm.value.wrongAnswer = ''
+  AddTopicOpen.value = true
+}
+const resetAddTopicForm = () => {
+  AddTopicRef.value.resetFields();
+  AddTopicOpen.value = false
+}
+const handleAddTopicOk = async (value)=>{
+  AddTopicLoading.value = true
+  console.log(value)
+  const res =await proxy.request({
+    url:'/knowledge/addTopic',
+    method:'post',
+    data:value
+  })
+  if (res.code === '200') {
+    setTimeout(()=>{
+      AddTopicLoading.value = false
+      message.success("添加成功！")
+      value.selectNumber = 0
+      value.id = res.data
+      List.value.push(value)
+      resetAddTopicForm()
+    },1000)
+
   }
 }
 const getKnowledgeList = async () => {

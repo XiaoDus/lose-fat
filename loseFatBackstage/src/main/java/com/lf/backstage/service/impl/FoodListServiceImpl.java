@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -26,6 +27,11 @@ public class FoodListServiceImpl extends ServiceImpl<FoodListMapper, FoodList> i
     @Override
     public List<ResFoodList> getList() {
         return FoodListMapper.getList();
+    }
+
+    @Override
+    public List<Map<String, Object>> getFoodCategoryDistribution() {
+        return  FoodListMapper.getFoodCategoryDistribution();
     }
 
 

@@ -58,5 +58,16 @@ public class FoodKnowledgeController {
 
         return Result.error(Constants.CODE_400,"修改失败！");
     }
+    @PostMapping("/addTopic")
+    public Result addTopic(@RequestBody FoodKnowledge fk) {
+        boolean b = fkService.save(fk);
+        if (b){
+            redisTemplate.delete("knowledge");
+            System.out.println();
+            return Result.success(fk.getId());
+        }
+
+        return Result.error(Constants.CODE_400,"保存失败！");
+    }
 }
 
