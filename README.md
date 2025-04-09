@@ -56,7 +56,6 @@
 3. 启动后端 Spring Boot 项目。
 4. 启动前端 Vue 项目：
    ```bash
-   cd frontend
    npm install
    vite dev
    ```
